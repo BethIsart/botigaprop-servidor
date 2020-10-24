@@ -1,20 +1,20 @@
 package botigaprop.servidor.Models;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import javax.validation.constraints.*;
 import java.util.Date;
 
 @Entity
 @Table(name = "Usuaris")
 public class Usuari {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer idUsuari;
+    private String idUsuari;
+    @NotNull
+    @Email
     private String email;
+    @NotNull
     private String contrasenya;
+    @NotNull
     private Rol rol;
     private String nom;
     private String cifEmpresa;
@@ -23,14 +23,15 @@ public class Usuari {
     private String provincia;
     private Date dataCreacio;
     private Date ultimAcces;
+    private boolean usuariDeshabilitat;
 
     public Usuari() { }
 
-    public Integer getIdUsuari() {
+    public String getIdUsuari() {
         return idUsuari;
     }
 
-    public void setIdUsuari(Integer idUsuari) {
+    public void setIdUsuari(String idUsuari) {
         this.idUsuari = idUsuari;
     }
 
@@ -112,5 +113,13 @@ public class Usuari {
 
     public void setNom(String nom) {
         this.nom = nom;
+    }
+
+    public boolean isUsuariDeshabilitat() {
+        return usuariDeshabilitat;
+    }
+
+    public void setUsuariDeshabilitat(boolean usuariDeshabilitat) {
+        this.usuariDeshabilitat = usuariDeshabilitat;
     }
 }
