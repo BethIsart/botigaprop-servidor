@@ -8,11 +8,17 @@ import botigaprop.servidor.Persistence.UsuariRepository;
 import botigaprop.servidor.Services.GestorContrasenyes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
 @RestController
 public class UsuariController {
@@ -65,9 +71,34 @@ public class UsuariController {
             throw new BadRequestException("L'usuari està deshabilitat");
         }
 
-        //TODO set last access
+        String token = ObtenirToken(usuari.getIdUsuari());
 
-         return "token";
+        usuari.setUltimAcces(new Date());
+        repository.save(usuari);
+
+         return token;
+    }
+
+    private String ObtenirToken(String idUsuari) {
+        String secretKey = "mySecretKey";
+        List<GrantedAuthority> grantedAuthorities = AuthorityUtils
+                .commaSeparatedStringToAuthorityList("ROLE_USER");
+
+        //TODO validar camp ID y secretkey
+        String token = Jwts
+                .builder()
+                .setId("someId")
+                .setSubject(idUsuari)
+                .claim("authorities",
+                        grantedAuthorities.stream()
+                                .map(GrantedAuthority::getAuthority)
+                                .collect(Collectors.toList()))
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 600000))
+                .signWith(SignatureAlgorithm.HS512,
+                        secretKey.getBytes()).compact();
+
+        return "Bearer " + token;
     }
 
     private void InicialitzarCampsNouUsuari(Usuari nouUsuari) {
