@@ -2,6 +2,7 @@ package botigaprop.servidor.Controllers;
 
 import botigaprop.servidor.Exceptions.BadRequestException;
 import botigaprop.servidor.Models.DadesAcces;
+import botigaprop.servidor.Models.PeticioCanviContrasenya;
 import botigaprop.servidor.Models.Rol;
 import botigaprop.servidor.Models.Usuari;
 import botigaprop.servidor.Persistence.UsuariRepository;
@@ -10,15 +11,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 public class UsuariController {
     private static final Logger log = LoggerFactory.getLogger(UsuariController.class.getName());
     private final UsuariRepository repository;
     private final GestorContrasenyes gestorContrasenyes;
+
+    private Map<String, String> codisAccesAcreditats = new HashMap<>();
 
     public UsuariController(UsuariRepository repository) {
         this.repository = repository;
@@ -33,9 +34,10 @@ public class UsuariController {
         ValidarCampsNouUsuari(nouUsuari);
         InicialitzarCampsNouUsuari(nouUsuari);
 
-        nouUsuari.setContrasenya(gestorContrasenyes.EncriptarContrasenya(nouUsuari.getContrasenya()));
+        //nouUsuari.setContrasenya(gestorContrasenyes.EncriptarContrasenya(nouUsuari.getContrasenya()));
         //TODO gestionar error si falla l'encriptació
         //TODO no permetre usuaris amb el mateix email?
+        //TODO canviar tipo petició i fer map a BD
 
         repository.save(nouUsuari);
 
@@ -47,11 +49,12 @@ public class UsuariController {
     @GetMapping("/login")
     public String iniciarSessio(@RequestBody DadesAcces dadesAccesUsuari) {
 
+        //TODO revisar si ja te codi d'acces
         log.trace("Petició de inici de sessió del usuari amb email " + dadesAccesUsuari.getEmail());
         ValidarCampsIniciSessio(dadesAccesUsuari);
 
-        String contrasenyaEncriptada = gestorContrasenyes.EncriptarContrasenya(dadesAccesUsuari.getContrasenya());
-        List<Usuari> usuaris = repository.findUsuariByEmailAndContrasenya(dadesAccesUsuari.getEmail(), contrasenyaEncriptada);
+        //String contrasenyaEncriptada = gestorContrasenyes.EncriptarContrasenya(dadesAccesUsuari.getContrasenya());
+        List<Usuari> usuaris = repository.findUsuariByEmailAndContrasenya(dadesAccesUsuari.getEmail(), dadesAccesUsuari.getContrasenya());
 
         if (usuaris == null || usuaris.size() != 1)
         {
@@ -65,9 +68,56 @@ public class UsuariController {
             throw new BadRequestException("L'usuari està deshabilitat");
         }
 
-        //TODO set last access
+        usuari.setUltimAcces(new Date());
+        repository.save(usuari);
 
-         return "token";
+        String codiAcces = UUID.randomUUID().toString();
+        codisAccesAcreditats.put(codiAcces, usuari.getIdUsuari());
+
+         return codiAcces;
+    }
+
+    @GetMapping("/logout/{codiAcces}")
+    public String finalitzarSessio(@PathVariable String codiAcces) {
+        ValidarCodiAcces(codiAcces);
+
+        codisAccesAcreditats.remove(codiAcces);
+
+        return "Sessió finalitzada";
+    }
+
+    @PutMapping("/canviarContrasenya/{codiAcces}")
+    public String canviarContrasenya(@RequestBody PeticioCanviContrasenya peticio, @PathVariable String codiAcces)
+    {
+        //TODO revisar restriccions
+        String idUsuari = ValidarCodiAcces(codiAcces);
+        Usuari usuari = repository.findByIdUsuari(idUsuari);
+
+        //TODO encriptar contrasenya nova
+        usuari.setContrasenya(peticio.getContrasenya());
+        repository.save(usuari);
+
+        return "Contrassenya modificada";
+    }
+
+    @DeleteMapping("/baixa/{codiAcces}")
+    public String deshabilitarUsuari( @PathVariable String codiAcces)
+    {
+        //TODO revisar restriccions
+        String idUsuari = ValidarCodiAcces(codiAcces);
+        Usuari usuari = repository.findByIdUsuari(idUsuari);
+
+        usuari.setDeshabilitat(true);
+        repository.save(usuari);
+
+        return "Usuari deshabilitat";
+    }
+
+    private String ValidarCodiAcces(String codiAcces) {
+        if (!codisAccesAcreditats.containsKey(codiAcces)){
+            throw new BadRequestException("Codi d'accés no vàlid");
+        }
+        return codisAccesAcreditats.get(codiAcces);
     }
 
     private void InicialitzarCampsNouUsuari(Usuari nouUsuari) {
