@@ -6,6 +6,25 @@
 	},
 	"item": [
 		{
+			"name": "LlistaUsuaris",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/usuaris/codiAcces",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"usuaris",
+						"codiAcces"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Registre",
 			"request": {
 				"method": "POST",
@@ -123,7 +142,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "",
+					"raw": "{\r\n    \"idUsuari\":\"idUsuari\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
