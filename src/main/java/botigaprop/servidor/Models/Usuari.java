@@ -23,7 +23,7 @@ public class Usuari {
     private String provincia;
     private Date dataCreacio;
     private Date ultimAcces;
-    private boolean usuariDeshabilitat;
+    private boolean deshabilitat;
 
     public Usuari() { }
 
@@ -115,11 +115,11 @@ public class Usuari {
         this.nom = nom;
     }
 
-    public boolean isUsuariDeshabilitat() {
-        return usuariDeshabilitat;
+    public boolean isDeshabilitat() {
+        return deshabilitat;
     }
 
-    public void setUsuariDeshabilitat(boolean usuariDeshabilitat) {
-        this.usuariDeshabilitat = usuariDeshabilitat;
+    public void setDeshabilitat(boolean usuariDeshabilitat) {
+        this.deshabilitat = usuariDeshabilitat;
     }
 }

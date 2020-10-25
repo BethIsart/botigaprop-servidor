@@ -1,17 +1,17 @@
 package botigaprop.servidor.Controllers;
 
 import botigaprop.servidor.Exceptions.BadRequestException;
+import botigaprop.servidor.Models.DadesAcces;
 import botigaprop.servidor.Models.Rol;
 import botigaprop.servidor.Models.Usuari;
 import botigaprop.servidor.Persistence.UsuariRepository;
 import botigaprop.servidor.Services.GestorContrasenyes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -35,12 +35,39 @@ public class UsuariController {
 
         nouUsuari.setContrasenya(gestorContrasenyes.EncriptarContrasenya(nouUsuari.getContrasenya()));
         //TODO gestionar error si falla l'encriptació
+        //TODO no permetre usuaris amb el mateix email?
 
         repository.save(nouUsuari);
 
         log.trace("Usuari registrat amb l'identificador " + nouUsuari.getIdUsuari());
 
         return "Usuari registrat correctament amb el id " + nouUsuari.getIdUsuari();
+    }
+
+    @GetMapping("/login")
+    public String iniciarSessio(@RequestBody DadesAcces dadesAccesUsuari) {
+
+        log.trace("Petició de inici de sessió del usuari amb email " + dadesAccesUsuari.getEmail());
+        ValidarCampsIniciSessio(dadesAccesUsuari);
+
+        String contrasenyaEncriptada = gestorContrasenyes.EncriptarContrasenya(dadesAccesUsuari.getContrasenya());
+        List<Usuari> usuaris = repository.findUsuariByEmailAndContrasenya(dadesAccesUsuari.getEmail(), contrasenyaEncriptada);
+
+        if (usuaris == null || usuaris.size() != 1)
+        {
+            throw new BadRequestException("L'usuari no existeix");
+            //TODO gestionar error més d'un usuari
+        }
+
+        Usuari usuari = usuaris.get(0);
+        if (usuari.isDeshabilitat())
+        {
+            throw new BadRequestException("L'usuari està deshabilitat");
+        }
+
+        //TODO set last access
+
+         return "token";
     }
 
     private void InicialitzarCampsNouUsuari(Usuari nouUsuari) {
@@ -99,6 +126,17 @@ public class UsuariController {
         }
     }
 
+    private void ValidarCampsIniciSessio(DadesAcces dadesAccesUsuari) {
 
-    //TODO set last access
+        if (dadesAccesUsuari.getEmail() == null || dadesAccesUsuari.getEmail().isEmpty())
+        {
+            throw new BadRequestException("El camp email és obligatori");
+        }
+
+        if (dadesAccesUsuari.getContrasenya() == null || dadesAccesUsuari.getContrasenya().isEmpty())
+        {
+            throw new BadRequestException("El camp contrasenya és obligatori");
+        }
+    }
+
 }
