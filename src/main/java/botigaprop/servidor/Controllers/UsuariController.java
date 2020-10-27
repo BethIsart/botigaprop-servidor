@@ -4,6 +4,7 @@ import botigaprop.servidor.Exceptions.BadRequestException;
 import botigaprop.servidor.Exceptions.UsuariNotFoundException;
 import botigaprop.servidor.Models.*;
 import botigaprop.servidor.Persistence.UsuariRepository;
+import botigaprop.servidor.Services.ControlAcces;
 import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,10 +19,11 @@ import java.util.*;
 public class UsuariController {
     private static final Logger log = LoggerFactory.getLogger(UsuariController.class.getName());
     private final UsuariRepository repository;
-    private final Map<String, String> codisAccesAcreditats = new HashMap<>();
+    private final ControlAcces controlAcces;
 
-    public UsuariController(UsuariRepository repository) {
+    public UsuariController(UsuariRepository repository, ControlAcces controlAcces) {
         this.repository = repository;
+        this.controlAcces = controlAcces;
     }
 
     @PostMapping("/registre")
@@ -46,9 +48,9 @@ public class UsuariController {
 
         ValidarCampsObligatorisPeticioLogin(dadesAccesUsuari);
         Usuari usuari = ValidarUsuariICredencials(dadesAccesUsuari);
-        ValidarUsuariSenseAccesPrevi(usuari);
+        controlAcces.ValidarUsuariSenseAccesPrevi(usuari);
         ActualitzarDataUltimAcces(usuari);
-        String codiAcces = GenerarCodiAcces(usuari);
+        String codiAcces = controlAcces.GenerarCodiAcces(usuari);
 
         log.info("Retornat codi d'accés per l'usuari amb identificador "+ usuari.getIdUsuari() +" : " + codiAcces);
 
@@ -60,8 +62,8 @@ public class UsuariController {
 
         log.trace("Petició de finalitzar sessió del codi " + codiAcces);
 
-        ValidarCodiAcces(codiAcces);
-        codisAccesAcreditats.remove(codiAcces);
+        controlAcces.ValidarCodiAcces(codiAcces);
+        controlAcces.EliminarCodiAcces(codiAcces);
 
         log.info("Sessió finalitzada correctament pel codi " + codiAcces);
         return "Sessió finalitzada";
@@ -72,7 +74,7 @@ public class UsuariController {
     {
         log.trace("Petició de canvi de contrasenya del codi " + codiAcces);
 
-        String idUsuari = ValidarCodiAcces(codiAcces);
+        String idUsuari = controlAcces.ValidarCodiAcces(codiAcces);
         ValidarCampsObligatorisPeticioCanviarContrasenya(peticio);
         ActualitzarContrasenya(peticio, idUsuari);
 
@@ -84,7 +86,7 @@ public class UsuariController {
     {
         log.trace("Petició de deshabilitar usuari amb identificador del codi "+ codiAcces);
 
-        String idUsuari = ValidarCodiAcces(codiAcces);
+        String idUsuari = controlAcces.ValidarCodiAcces(codiAcces);
         ValidarCampsObligatorisPeticioDeshabilitarUsuari(peticio);
         ValidarUsuariAmbPermisosAdministrador(idUsuari);
         DeshabilitarUsuari(peticio);
@@ -97,20 +99,13 @@ public class UsuariController {
 
         log.trace("Petició de llistar usuaris del codi " + codiAcces);
 
-        String idUsuari = ValidarCodiAcces(codiAcces);
+        String idUsuari = controlAcces.ValidarCodiAcces(codiAcces);
         ValidarUsuariAmbPermisosAdministrador(idUsuari);
 
         List<Usuari> usuaris = repository.findAll();
 
         log.trace("Retornada llista d'usuaris");
         return usuaris;
-    }
-
-    private String ValidarCodiAcces(String codiAcces) {
-        if (!codisAccesAcreditats.containsKey(codiAcces)){
-            throw new BadRequestException("Codi d'accés no vàlid");
-        }
-        return codisAccesAcreditats.get(codiAcces);
     }
 
     private void InicialitzarCampsNouUsuari(Usuari nouUsuari) {
@@ -216,12 +211,6 @@ public class UsuariController {
         repository.save(usuari);
     }
 
-    private String GenerarCodiAcces(Usuari usuari) {
-        String codiAcces = UUID.randomUUID().toString();
-        codisAccesAcreditats.put(codiAcces, usuari.getIdUsuari());
-        return codiAcces;
-    }
-
     private void ValidarCampsObligatorisPeticioCanviarContrasenya(PeticioCanviContrasenya peticio) {
         if (peticio.getContrasenya() == null || peticio.getContrasenya().isEmpty())
         {
@@ -234,13 +223,6 @@ public class UsuariController {
         usuari.setContrasenya(BCrypt.hashpw(peticio.getContrasenya(), BCrypt.gensalt()));
         repository.save(usuari);
         log.info("Contrasenya modificada correctament per l'usuari amb identificador " + usuari.getIdUsuari());
-    }
-
-    private void ValidarUsuariSenseAccesPrevi(Usuari usuari) {
-        if (codisAccesAcreditats.containsValue(usuari.getIdUsuari()))
-        {
-            throw new BadRequestException("Aquest usuari ja te accés. Per obtenir un nou codi primer ha de finalitzar sessió");
-        }
     }
 
     private void ValidarCampsObligatorisPeticioDeshabilitarUsuari(PeticioDeshabilitarUsuari peticio) {
