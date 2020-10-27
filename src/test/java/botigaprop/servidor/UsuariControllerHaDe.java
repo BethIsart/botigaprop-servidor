@@ -238,7 +238,7 @@ public class UsuariControllerHaDe {
         Usuari usuari = donatUnUsuariRegistrat();
         Mockito.when(controlAcces.GenerarCodiAcces(usuari)).thenReturn(codiAcces);
 
-        mvc.perform(get("/login")
+        mvc.perform(post("/login")
                 .content(objectmapper.writeValueAsString(dadesAcces))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -251,7 +251,7 @@ public class UsuariControllerHaDe {
 
         DadesAcces dadesAcces = donatLesDadesDAccesDUnUsuari(null, unaContrasenya);
 
-        mvc.perform(get("/login")
+        mvc.perform(post("/login")
                 .content(objectmapper.writeValueAsString(dadesAcces))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
@@ -264,7 +264,7 @@ public class UsuariControllerHaDe {
 
         DadesAcces dadesAcces = donatLesDadesDAccesDUnUsuari(email, null);
 
-        mvc.perform(get("/login")
+        mvc.perform(post("/login")
                 .content(objectmapper.writeValueAsString(dadesAcces))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
@@ -278,7 +278,7 @@ public class UsuariControllerHaDe {
         DadesAcces dadesAcces = donatLesDadesDAccesDUnUsuari(email, unaContrasenya);
         donatUsuariNoRegistrat();
 
-        mvc.perform(get("/login")
+        mvc.perform(post("/login")
                 .content(objectmapper.writeValueAsString(dadesAcces))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
@@ -292,7 +292,7 @@ public class UsuariControllerHaDe {
         DadesAcces dadesAcces = donatLesDadesDAccesDUnUsuari(email, "unaContrasenyaErronea");
         donatUnUsuariRegistrat();
 
-        mvc.perform(get("/login")
+        mvc.perform(post("/login")
                 .content(objectmapper.writeValueAsString(dadesAcces))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
@@ -307,7 +307,7 @@ public class UsuariControllerHaDe {
         Usuari usuari = donatUnUsuariRegistrat();
         usuari.setDeshabilitat(true);
 
-        mvc.perform(get("/login")
+        mvc.perform(post("/login")
                 .content(objectmapper.writeValueAsString(dadesAcces))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())

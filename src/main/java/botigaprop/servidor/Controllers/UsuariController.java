@@ -41,7 +41,7 @@ public class UsuariController {
         return "Usuari registrat correctament amb el id " + nouUsuari.getIdUsuari();
     }
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     public String iniciarSessio(@RequestBody DadesAcces dadesAccesUsuari) {
 
         log.trace("Petició d'inici de sessió del usuari amb email " + dadesAccesUsuari.getEmail());
