@@ -13,4 +13,10 @@ public class DadesAcces {
     public String getContrasenya() {
         return contrasenya;
     }
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    public void setContrasenya(String contrasenya) {
+        this.contrasenya = contrasenya;
+    }
 }

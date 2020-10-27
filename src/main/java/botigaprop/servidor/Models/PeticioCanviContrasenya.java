@@ -9,4 +9,8 @@ public class PeticioCanviContrasenya {
     public String getContrasenya() {
         return contrasenya;
     }
+
+    public void setContrasenya(String contrasenya) {
+        this.contrasenya = contrasenya;
+    }
 }
