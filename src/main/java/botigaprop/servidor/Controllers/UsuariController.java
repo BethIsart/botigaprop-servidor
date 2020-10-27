@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
+/**
+ * @author Elisabet Isart
+ */
 @RestController
 public class UsuariController {
     private static final Logger log = LoggerFactory.getLogger(UsuariController.class.getName());

@@ -5,6 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
+/**
+ * @author Elisabet Isart
+ */
 public interface UsuariRepository extends JpaRepository<Usuari, Integer>{
     List<Usuari> findUsuariByEmailAndDeshabilitatIsFalse(String email);
     Usuari findByIdUsuari(String idUsuari);

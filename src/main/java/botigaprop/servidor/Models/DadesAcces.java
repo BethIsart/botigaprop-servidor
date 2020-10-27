@@ -1,5 +1,8 @@
 package botigaprop.servidor.Models;
 
+/**
+ * @author Elisabet Isart
+ */
 public class DadesAcces {
     private String email;
     private String contrasenya;
