@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * @author Elisabet Isart
  */
-public interface UsuariRepository extends JpaRepository<Usuari, Integer>{
+public interface UsuariRepository extends JpaRepository<Usuari, String>{
     List<Usuari> findUsuariByEmailAndDeshabilitatIsFalse(String email);
     Usuari findByIdUsuari(String idUsuari);
 }
