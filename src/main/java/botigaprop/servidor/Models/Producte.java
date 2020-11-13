@@ -19,12 +19,12 @@ public class Producte {
     private String nom;
     private String descripcio;
     @NotNull
-    private Categoria categoria;
+    private Categoria tipus;
     @NotNull
     private double preu;
     @NotNull
-    private String unitat;
-    private double quantitat;
+    private String unitats;
+    private double quantitatPerUnitat;
     private Boolean disponible;
     private byte[] imatge;
     private Date dataCreacio;
@@ -62,12 +62,12 @@ public class Producte {
         this.descripcio = descripcio;
     }
 
-    public Categoria getCategoria() {
-        return categoria;
+    public Categoria getTipus() {
+        return tipus;
     }
 
-    public void setCategoria(Categoria categoria) {
-        this.categoria = categoria;
+    public void setTipus(Categoria categoria) {
+        this.tipus = categoria;
     }
 
     public double getPreu() {
@@ -78,20 +78,20 @@ public class Producte {
         this.preu = preu;
     }
 
-    public String getUnitat() {
-        return unitat;
+    public String getUnitats() {
+        return unitats;
     }
 
-    public void setUnitat(String unitat) {
-        this.unitat = unitat;
+    public void setUnitats(String unitat) {
+        this.unitats = unitat;
     }
 
-    public double getQuantitat() {
-        return quantitat;
+    public double getQuantitatPerUnitat() {
+        return quantitatPerUnitat;
     }
 
-    public void setQuantitat(double quantitat) {
-        this.quantitat = quantitat;
+    public void setQuantitatPerUnitat(double quantitat) {
+        this.quantitatPerUnitat = quantitat;
     }
 
     public Boolean isDisponible() {
