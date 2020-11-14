@@ -29,6 +29,7 @@ public class Producte {
     private byte[] imatge;
     private Date dataCreacio;
     private Date dataUltimaEdicio;
+    private boolean eliminat;
 
     public String getIdProducte() {
         return idProducte;
@@ -124,5 +125,13 @@ public class Producte {
 
     public void setImatge(byte[] imatge) {
         this.imatge = imatge;
+    }
+
+    public Boolean getEliminat() {
+        return eliminat;
+    }
+
+    public void setEliminat(Boolean eliminat) {
+        this.eliminat = eliminat;
     }
 }
