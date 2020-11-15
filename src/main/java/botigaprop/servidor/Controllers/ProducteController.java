@@ -2,6 +2,7 @@ package botigaprop.servidor.Controllers;
 
 import botigaprop.servidor.Exceptions.BadRequestException;
 import botigaprop.servidor.Exceptions.ProducteNotFoundException;
+import botigaprop.servidor.Exceptions.UsuariNotAllowedException;
 import botigaprop.servidor.Models.*;
 import botigaprop.servidor.Persistence.ProducteRepository;
 import botigaprop.servidor.Persistence.UsuariRepository;
@@ -11,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -58,7 +60,22 @@ public class ProducteController {
         String idUsuari = controlAcces.ValidarCodiAcces(codiAcces);
         Usuari usuari = usuariRepository.findByIdUsuari(idUsuari);
 
-        List<Producte> productes = producteRepository.findProducteByIdUsuariAndEliminatIsFalse(usuari);
+        List<Producte> productes = new ArrayList<>();
+        if (usuari.getRol() == Rol.PROVEIDOR)
+        {
+            productes = producteRepository.findProducteByIdUsuariAndEliminatIsFalse(usuari);;
+        }
+
+        if (usuari.getRol() == Rol.CLIENT)
+        {
+            productes = producteRepository.findProducteByEliminatIsFalse();
+        }
+
+        if (usuari.getRol() == Rol.ADMINISTRADOR)
+        {
+            productes = producteRepository.findAll();
+        }
+
         List<ProducteVisualitzacio> productesAMostrar = mapper.ProductesAMostrar(productes);
 
         log.trace("Retornada llista de productes");
@@ -73,9 +90,24 @@ public class ProducteController {
         String idUsuari = controlAcces.ValidarCodiAcces(codiAcces);
         ValidarCampsObligatorisPeticioBaixaProducte(peticio);
         ValidarUsuariProveidor(idUsuari);
-        BaixaProducte(peticio);
+        Producte producte = ValidarProducteExistentIDelUsuari(peticio.getIdProducte(), idUsuari);
+        BaixaProducte(producte);
 
         return "Producte donat de baixa";
+    }
+
+    @PutMapping("/editarproducte/{codiAcces}")
+    public ProducteVisualitzacio editarProducte(@RequestBody ProducteVisualitzacio producteEditat, @PathVariable String codiAcces)
+    {
+        log.trace("Petició d'edició de producte del codi " + codiAcces);
+
+        String idUsuari = controlAcces.ValidarCodiAcces(codiAcces);
+        ValidarUsuariProveidor(idUsuari);
+        ValidarCampsObligatorisEdicioProducte(producteEditat);
+        Producte producteGuardat = ValidarProducteExistentIDelUsuari(producteEditat.getIdProducte(), idUsuari);
+        ProducteVisualitzacio producteActualitzat = ActualitzarProducte(producteGuardat, producteEditat);
+
+        return producteActualitzat;
     }
 
     private void ValidarCampsNouProducte(Producte nouProducte) {
@@ -92,18 +124,23 @@ public class ProducteController {
 
         if (nouProducte.getPreu() <= 0)
         {
-            throw new BadRequestException("El camp preu és obligatori");
+            throw new BadRequestException("El camp preu és obligatori i no pot ser igual o inferior a 0");
         }
 
         if (nouProducte.getUnitats() == null || nouProducte.getUnitats().isEmpty())
         {
             throw new BadRequestException("El camp unitats és obligatori");
         }
+
+        if (nouProducte.getQuantitatPerUnitat() < 0)
+        {
+            throw new BadRequestException("El valor del camp quantitat per unitat no pot ser negatiu");
+        }
     }
 
     private void InicialitzarCampsNouProducte(Producte nouProducte, String idUsuari) {
         Usuari usuari = usuariRepository.findByIdUsuari(idUsuari);
-        nouProducte.setIdUsuari(usuari);
+        nouProducte.setUsuari(usuari);
         nouProducte.setIdProducte(UUID.randomUUID().toString());
         nouProducte.setDataCreacio(new Date());
 
@@ -117,7 +154,7 @@ public class ProducteController {
         Usuari usuari = usuariRepository.findByIdUsuari(idUsuari);
         if (usuari.getRol() != Rol.PROVEIDOR)
         {
-            throw new BadRequestException("Aquesta funcionalitat requereix el rol de proveïdor");
+            throw new UsuariNotAllowedException("Aquesta funcionalitat requereix el rol de proveïdor");
         }
     }
 
@@ -128,16 +165,92 @@ public class ProducteController {
         }
     }
 
-    private void BaixaProducte(PeticioBaixaProducte peticio) {
-        Producte producte = producteRepository.findByIdProducte(peticio.getIdProducte());
+    private void BaixaProducte(Producte producte) {
+        producte.setEliminat(true);
+        producte.setDataUltimaEdicio(new Date());
+        producteRepository.save(producte);
+        log.info("Donat de baixa el producte amb identificador "+producte.getIdProducte());
+    }
+
+    private void ValidarCampsObligatorisEdicioProducte(ProducteVisualitzacio producteEditat) {
+
+        if (producteEditat.getIdProducte() == null || producteEditat.getIdProducte().isEmpty())
+        {
+            throw new BadRequestException("El camp id producte és obligatori");
+        }
+    }
+
+    private Producte ValidarProducteExistentIDelUsuari(String idProducte, String idUsuari) {
+
+        Producte producte = producteRepository.findByIdProducte(idProducte);
 
         if (producte == null)
         {
-            throw new ProducteNotFoundException(peticio.getIdProducte());
+            throw new ProducteNotFoundException(idProducte);
         }
 
-        producte.setEliminat(true);
+        if (!producte.getUsuari().getIdUsuari().equals(idUsuari))
+        {
+            throw new ProducteNotFoundException(idProducte);
+        }
+
+        return producte;
+    }
+
+    private ProducteVisualitzacio ActualitzarProducte(Producte producte, ProducteVisualitzacio producteEditat) {
+
+        if (producteEditat.getNom() != null && !producteEditat.getNom().isEmpty())
+        {
+            producte.setNom(producteEditat.getNom());
+        }
+
+        if (producteEditat.getDescripcio() != null && !producteEditat.getDescripcio().isEmpty())
+        {
+            producte.setDescripcio(producteEditat.getDescripcio());
+        }
+
+        if (producteEditat.getUnitats() != null && !producteEditat.getUnitats().isEmpty())
+        {
+            producte.setUnitats(producteEditat.getUnitats());
+        }
+
+        if (producteEditat.getTipus() != null)
+        {
+            producte.setTipus(producteEditat.getTipus());
+        }
+
+        if (producteEditat.getPreu() != null)
+        {
+            if (producteEditat.getPreu() <= 0)
+            {
+                throw new BadRequestException("El valor del preu no pot ser negatiu");
+            }
+            producte.setPreu(producteEditat.getPreu());
+        }
+
+        if (producteEditat.getQuantitatPerUnitat() != null)
+        {
+            if (producteEditat.getQuantitatPerUnitat() <= 0)
+            {
+                throw new BadRequestException("El valor del camp quantitat per unitat no pot ser negatiu");
+            }
+            producte.setQuantitatPerUnitat(producteEditat.getQuantitatPerUnitat());
+        }
+
+        if (producteEditat.getDisponible() != null && producteEditat.getDisponible() != producte.isDisponible())
+        {
+            producte.setDisponible(producteEditat.getDisponible());
+        }
+
+        if (producteEditat.getImatge() != null)
+        {
+            producte.setImatge(producteEditat.getImatge());
+        }
+
+        producte.setDataUltimaEdicio(new Date());
+
         producteRepository.save(producte);
-        log.info("Donat de baixa el producte amb identificador "+producte.getIdProducte());
+
+        return mapper.ProducteAMostrar(producte);
     }
 }

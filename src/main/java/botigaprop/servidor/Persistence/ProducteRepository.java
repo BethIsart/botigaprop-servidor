@@ -12,5 +12,6 @@ import java.util.List;
 public interface ProducteRepository extends JpaRepository<Producte, String> {
 
     List<Producte> findProducteByIdUsuariAndEliminatIsFalse(Usuari usuari);
+    List<Producte> findProducteByEliminatIsFalse();
     Producte findByIdProducte(String idProducte);
 }

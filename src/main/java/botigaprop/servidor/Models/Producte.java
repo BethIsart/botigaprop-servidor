@@ -39,12 +39,12 @@ public class Producte {
         this.idProducte = idProducte;
     }
 
-    public Usuari getIdUsuari() {
+    public Usuari getUsuari() {
         return idUsuari;
     }
 
-    public void setIdUsuari(Usuari idUsuari) {
-        this.idUsuari = idUsuari;
+    public void setUsuari(Usuari usuari) {
+        this.idUsuari = usuari;
     }
 
     public String getNom() {

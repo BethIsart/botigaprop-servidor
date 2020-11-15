@@ -1,6 +1,7 @@
 package botigaprop.servidor.Controllers;
 
 import botigaprop.servidor.Exceptions.BadRequestException;
+import botigaprop.servidor.Exceptions.UsuariNotAllowedException;
 import botigaprop.servidor.Exceptions.UsuariNotFoundException;
 import botigaprop.servidor.Models.*;
 import botigaprop.servidor.Persistence.UsuariRepository;
@@ -236,7 +237,7 @@ public class UsuariController {
         Usuari usuari = repository.findByIdUsuari(idUsuari);
         if (usuari.getRol() != Rol.ADMINISTRADOR)
         {
-            throw new BadRequestException("Aquest usuari no té permís d'administrador");
+            throw new UsuariNotAllowedException("Aquest usuari no té permís d'administrador");
         }
     }
 
