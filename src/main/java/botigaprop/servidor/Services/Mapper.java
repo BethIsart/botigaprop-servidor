@@ -27,7 +27,7 @@ public class Mapper {
     public ProducteVisualitzacio ProducteAMostrar(Producte producte)
     {
         return new ProducteVisualitzacio(
-                producte.getIdProducte(), producte.getNom(), producte.getTipus(), producte.getUnitats(),
+                producte.getIdProducte(), producte.getUsuari().getIdUsuari(), producte.getNom(), producte.getTipus(), producte.getUnitats(),
                 producte.getQuantitatPerUnitat(), producte.getPreu(), producte.getDescripcio(), producte.isDisponible(),
                 producte.getImatge());
     }

@@ -23,7 +23,7 @@ public class ControlAcces {
     }
 
     public String ValidarCodiAcces(String codiAcces) {
-        if (!codisAccesAcreditats.containsKey(codiAcces)){
+        if (codiAcces == null || !codisAccesAcreditats.containsKey(codiAcces)){
             throw new BadRequestException("Codi d'accés no vàlid");
         }
         return codisAccesAcreditats.get(codiAcces);

@@ -6,6 +6,7 @@ package botigaprop.servidor.Models;
 public class ProducteVisualitzacio {
 
     private String idProducte;
+    private String idProveidor;
     private String nom;
     private Categoria tipus;
     private String unitats;
@@ -15,8 +16,9 @@ public class ProducteVisualitzacio {
     private Boolean disponible;
     private byte[] imatge;
 
-    public ProducteVisualitzacio(String idProducte, String nom, Categoria tipus, String unitats, Double quantitatPerUnitat, Double preu, String descripcio, Boolean disponible, byte[] imatge) {
+    public ProducteVisualitzacio(String idProducte, String idProveidor, String nom, Categoria tipus, String unitats, Double quantitatPerUnitat, Double preu, String descripcio, Boolean disponible, byte[] imatge) {
         this.idProducte = idProducte;
+        this.idProveidor = idProveidor;
         this.nom = nom;
         this.tipus = tipus;
         this.unitats = unitats;
@@ -33,6 +35,14 @@ public class ProducteVisualitzacio {
 
     public void setIdProducte(String idProducte) {
         this.idProducte = idProducte;
+    }
+
+    public String getIdProveidor() {
+        return idProveidor;
+    }
+
+    public void setIdProveidor(String idProveidor) {
+        this.idProveidor = idProveidor;
     }
 
     public String getNom() {

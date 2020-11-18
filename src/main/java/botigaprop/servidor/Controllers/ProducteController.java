@@ -5,11 +5,13 @@ import botigaprop.servidor.Exceptions.ProducteNotFoundException;
 import botigaprop.servidor.Exceptions.UsuariNotAllowedException;
 import botigaprop.servidor.Models.*;
 import botigaprop.servidor.Persistence.ProducteRepository;
+import botigaprop.servidor.Persistence.ProducteSpecs;
 import botigaprop.servidor.Persistence.UsuariRepository;
 import botigaprop.servidor.Services.ControlAcces;
 import botigaprop.servidor.Services.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -63,7 +65,7 @@ public class ProducteController {
         List<Producte> productes = new ArrayList<>();
         if (usuari.getRol() == Rol.PROVEIDOR)
         {
-            productes = producteRepository.findProducteByIdUsuariAndEliminatIsFalse(usuari);;
+            productes = producteRepository.findProducteByIdUsuariAndEliminatIsFalse(usuari);
         }
 
         if (usuari.getRol() == Rol.CLIENT)
@@ -110,7 +112,27 @@ public class ProducteController {
         return producteActualitzat;
     }
 
+    @PostMapping("/filtrarproductes")
+    public List<ProducteVisualitzacio> filtrarProductes(@RequestBody PeticioFiltrarProductes peticio) {
+
+        log.trace("Petició de filtrar productes");
+
+        String idUsuari = controlAcces.ValidarCodiAcces(peticio.getCodiAcces());
+        Usuari usuari = usuariRepository.findByIdUsuari(idUsuari);
+
+        List<Producte> productes = FiltrarProductes(peticio, usuari);
+        List<ProducteVisualitzacio> productesAMostrar = mapper.ProductesAMostrar(productes);
+
+        log.trace("Retornada llista de productes");
+        return productesAMostrar;
+    }
+
     private void ValidarCampsNouProducte(Producte nouProducte) {
+
+        if (nouProducte == null)
+        {
+            throw new BadRequestException("Producte no informat");
+        }
 
         if (nouProducte.getNom() == null || nouProducte.getNom().isEmpty())
         {
@@ -252,5 +274,53 @@ public class ProducteController {
         producteRepository.save(producte);
 
         return mapper.ProducteAMostrar(producte);
+    }
+
+    private List<Producte> FiltrarProductes(PeticioFiltrarProductes peticio, Usuari usuari) {
+
+        Specification productesNoEliminats = ProducteSpecs.eliminatIsFalse();
+        Specification spec = Specification.where(ProducteSpecs.tipusEquals(peticio.getTipus()))
+                .and(ProducteSpecs.preuIsGreaterThan(peticio.getPreuMin()))
+                .and(ProducteSpecs.preuIsLessThan(peticio.getPreuMax()));
+
+
+        Usuari proveidor;
+        if (usuari.getRol() == Rol.PROVEIDOR)
+        {
+            proveidor = usuari;
+        }
+        else
+        {
+            proveidor = TrobarProveidor(peticio.getIdProveidor());
+        }
+
+        if (usuari.getRol() == Rol.PROVEIDOR || usuari.getRol() == Rol.CLIENT)
+        {
+            spec = Specification.where(spec).and(productesNoEliminats).and(ProducteSpecs.usuariEquals(proveidor));
+
+        }
+
+        if (usuari.getRol() == Rol.ADMINISTRADOR)
+        {
+            spec = Specification.where(spec).and(ProducteSpecs.usuariEquals(proveidor));
+        }
+
+        return producteRepository.findAll(spec);
+        //TODO return producteRepository.findAll(spec, pageable);
+    }
+
+    private Usuari TrobarProveidor(String idProveidor) {
+
+        if (idProveidor != null && !idProveidor.isEmpty())
+        {
+            Usuari usuari = usuariRepository.findByIdUsuari(idProveidor);
+            if (usuari == null) {
+                throw new BadRequestException("No existeix cap usuari amb l'identificador indicat");
+            }
+
+            return usuari;
+        }
+
+        return null;
     }
 }
