@@ -5,6 +5,9 @@ import botigaprop.servidor.Models.Producte;
 import botigaprop.servidor.Models.Usuari;
 import org.springframework.data.jpa.domain.Specification;
 
+/**
+ * @author Elisabet Isart
+ */
 public class ProducteSpecs {
 
     public static Specification<Producte> usuariEquals(Usuari usuari) {
