@@ -252,7 +252,7 @@ public class ProducteController {
 
         if (producteEditat.getQuantitatPerUnitat() != null)
         {
-            if (producteEditat.getQuantitatPerUnitat() <= 0)
+            if (producteEditat.getQuantitatPerUnitat() < 0)
             {
                 throw new BadRequestException("El valor del camp quantitat per unitat no pot ser negatiu");
             }
