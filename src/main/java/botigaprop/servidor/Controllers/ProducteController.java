@@ -85,14 +85,14 @@ public class ProducteController {
     }
 
     @DeleteMapping("/baixaproducte/{codiAcces}")
-    public String baixaProducte(@RequestBody PeticioBaixaProducte peticio, @PathVariable String codiAcces)
+    public String baixaProducte(@PathVariable String codiAcces, @PathVariable String idProducte)
     {
         log.trace("Petició de baixa de producte del codi "+ codiAcces);
 
         String idUsuari = controlAcces.ValidarCodiAcces(codiAcces);
-        ValidarCampsObligatorisPeticioBaixaProducte(peticio);
+        ValidarCampsObligatorisPeticioBaixaProducte(idProducte);
         ValidarUsuariProveidor(idUsuari);
-        Producte producte = ValidarProducteExistentIDelUsuari(peticio.getIdProducte(), idUsuari);
+        Producte producte = ValidarProducteExistentIDelUsuari(idProducte, idUsuari);
         BaixaProducte(producte);
 
         return "Producte donat de baixa";
@@ -180,8 +180,8 @@ public class ProducteController {
         }
     }
 
-    private void ValidarCampsObligatorisPeticioBaixaProducte(PeticioBaixaProducte peticio) {
-        if (peticio.getIdProducte() == null || peticio.getIdProducte().isEmpty())
+    private void ValidarCampsObligatorisPeticioBaixaProducte(String idProducte) {
+        if (idProducte == null || idProducte.isEmpty())
         {
             throw new BadRequestException("El camp id producte és obligatori");
         }
