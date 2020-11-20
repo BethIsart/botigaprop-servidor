@@ -84,7 +84,7 @@ public class ProducteController {
         return productesAMostrar;
     }
 
-    @DeleteMapping("/baixaproducte/{codiAcces}")
+    @DeleteMapping("/baixaproducte/{codiAcces}/{idProducte}")
     public String baixaProducte(@PathVariable String codiAcces, @PathVariable String idProducte)
     {
         log.trace("Petició de baixa de producte del codi "+ codiAcces);
