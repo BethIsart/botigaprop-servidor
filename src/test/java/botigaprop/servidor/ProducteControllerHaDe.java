@@ -583,6 +583,51 @@ public class ProducteControllerHaDe {
         assertThat(argument.getValue().getImatge()).isEqualTo(novaImatge);
     }
 
+    @Test
+    public void obtenirProductesFiltratsDelProveidor()
+            throws Exception {
+
+        donatUnUsuari(Rol.PROVEIDOR);
+        donatUnCodiDAccesValid();
+        PeticioFiltrarProductes peticio = new PeticioFiltrarProductes();
+        peticio.setCodiAcces(codiAcces);
+
+        mvc.perform(post("/filtrarproductes")
+                .content(objectmapper.writeValueAsString(peticio))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void obtenirProductesFiltratsPerUnUsuariClient()
+            throws Exception {
+
+        donatUnUsuari(Rol.CLIENT);
+        donatUnCodiDAccesValid();
+        PeticioFiltrarProductes peticio = new PeticioFiltrarProductes();
+        peticio.setCodiAcces(codiAcces);
+
+        mvc.perform(post("/filtrarproductes")
+                .content(objectmapper.writeValueAsString(peticio))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void obtenirProductesFiltratsPerUnUsuariAdministrador()
+            throws Exception {
+
+        donatUnUsuari(Rol.ADMINISTRADOR);
+        donatUnCodiDAccesValid();
+        PeticioFiltrarProductes peticio = new PeticioFiltrarProductes();
+        peticio.setCodiAcces(codiAcces);
+
+        mvc.perform(post("/filtrarproductes")
+                .content(objectmapper.writeValueAsString(peticio))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
     private void donatUnProducteDUnAltreProveidor() throws IOException {
         Usuari unAltreProveidor = donatUnUsuari(Rol.PROVEIDOR);
         unAltreProveidor.setIdUsuari("unAltreIdUsuari");

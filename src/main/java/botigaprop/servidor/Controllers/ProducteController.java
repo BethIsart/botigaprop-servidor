@@ -278,11 +278,9 @@ public class ProducteController {
 
     private List<Producte> FiltrarProductes(PeticioFiltrarProductes peticio, Usuari usuari) {
 
-        Specification productesNoEliminats = ProducteSpecs.eliminatIsFalse();
         Specification spec = Specification.where(ProducteSpecs.tipusEquals(peticio.getTipus()))
                 .and(ProducteSpecs.preuIsGreaterThan(peticio.getPreuMin()))
                 .and(ProducteSpecs.preuIsLessThan(peticio.getPreuMax()));
-
 
         Usuari proveidor;
         if (usuari.getRol() == Rol.PROVEIDOR)
@@ -296,8 +294,7 @@ public class ProducteController {
 
         if (usuari.getRol() == Rol.PROVEIDOR || usuari.getRol() == Rol.CLIENT)
         {
-            spec = Specification.where(spec).and(productesNoEliminats).and(ProducteSpecs.usuariEquals(proveidor));
-
+            spec = Specification.where(spec).and(ProducteSpecs.eliminatIsFalse()).and(ProducteSpecs.usuariEquals(proveidor));
         }
 
         if (usuari.getRol() == Rol.ADMINISTRADOR)

@@ -1,5 +1,8 @@
 package botigaprop.servidor.Models;
 
+/**
+ * @author Elisabet Isart
+ */
 public class PeticioAltraProducte {
 
     private String codiAcces;

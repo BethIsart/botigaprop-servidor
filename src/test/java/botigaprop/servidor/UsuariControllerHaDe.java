@@ -406,7 +406,7 @@ public class UsuariControllerHaDe {
         mvc.perform(delete("/baixa/" + codiAcces)
                 .content(objectmapper.writeValueAsString(peticio))
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isMethodNotAllowed())
                 .andExpect(result -> assertEquals("Aquest usuari no té permís d'administrador", result.getResolvedException().getMessage()));
     }
 
@@ -447,7 +447,7 @@ public class UsuariControllerHaDe {
 
         mvc.perform(get("/usuaris/" + codiAcces)
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isMethodNotAllowed())
                 .andExpect(result -> assertEquals("Aquest usuari no té permís d'administrador", result.getResolvedException().getMessage()));
     }
 
