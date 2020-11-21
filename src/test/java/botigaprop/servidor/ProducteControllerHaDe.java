@@ -9,6 +9,7 @@ import botigaprop.servidor.Services.Mapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -26,7 +27,7 @@ import java.io.IOException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -34,15 +35,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(ProducteController.class)
 public class ProducteControllerHaDe {
 
-    private final String idUsuari = "iddUsuari";
+    private final String idUsuari = "idUsuari";
     private final String codiAcces = "unCodiAcces";
     private final String nom = "unProducte";
     private final String descripcio = "unaDescripcio";
     private final Categoria tipus = Categoria.Peix;
-    private final int preu = 10;
+    private final double preu = 10;
     private final String unitat = "bossa";
-    private final int quantitat = 1;
+    private final double quantitat = 1;
     private final boolean disponible = true;
+    private final String idProducte = "idProducte";
 
     @Autowired
     private MockMvc mvc;
@@ -62,7 +64,7 @@ public class ProducteControllerHaDe {
 
         donatUnUsuari(Rol.PROVEIDOR);
         donatUnCodiDAccesValid();
-        Producte nouProducte = donatUnNouProducte(nom, tipus, preu, unitat, quantitat, disponible);
+        Producte nouProducte = donatUnProducte(nom, tipus, preu, unitat, quantitat, disponible);
         PeticioAltraProducte peticio = donadaUnaPeticioDAltaDeProducte(nouProducte);
 
         mvc.perform(post("/altaproducte")
@@ -78,7 +80,7 @@ public class ProducteControllerHaDe {
 
         donatUnUsuari(Rol.CLIENT);
         donatUnCodiDAccesValid();
-        Producte nouProducte = donatUnNouProducte(nom, tipus, preu, unitat, quantitat, disponible);
+        Producte nouProducte = donatUnProducte(nom, tipus, preu, unitat, quantitat, disponible);
         PeticioAltraProducte peticio = donadaUnaPeticioDAltaDeProducte(nouProducte);
 
         mvc.perform(post("/altaproducte")
@@ -109,7 +111,7 @@ public class ProducteControllerHaDe {
 
         donatUnUsuari(Rol.PROVEIDOR);
         donatUnCodiDAccesValid();
-        Producte nouProducte = donatUnNouProducte(null, tipus, preu, unitat, quantitat, disponible);
+        Producte nouProducte = donatUnProducte(null, tipus, preu, unitat, quantitat, disponible);
         PeticioAltraProducte peticio = donadaUnaPeticioDAltaDeProducte(nouProducte);
 
         mvc.perform(post("/altaproducte")
@@ -125,7 +127,7 @@ public class ProducteControllerHaDe {
 
         donatUnUsuari(Rol.PROVEIDOR);
         donatUnCodiDAccesValid();
-        Producte nouProducte = donatUnNouProducte(nom, null, preu, unitat, quantitat, disponible);
+        Producte nouProducte = donatUnProducte(nom, null, preu, unitat, quantitat, disponible);
         PeticioAltraProducte peticio = donadaUnaPeticioDAltaDeProducte(nouProducte);
 
         mvc.perform(post("/altaproducte")
@@ -141,7 +143,7 @@ public class ProducteControllerHaDe {
 
         donatUnUsuari(Rol.PROVEIDOR);
         donatUnCodiDAccesValid();
-        Producte nouProducte = donatUnNouProducte(nom, tipus, -1, unitat, quantitat, disponible);
+        Producte nouProducte = donatUnProducte(nom, tipus, -1, unitat, quantitat, disponible);
         PeticioAltraProducte peticio = donadaUnaPeticioDAltaDeProducte(nouProducte);
 
         mvc.perform(post("/altaproducte")
@@ -157,7 +159,7 @@ public class ProducteControllerHaDe {
 
         donatUnUsuari(Rol.PROVEIDOR);
         donatUnCodiDAccesValid();
-        Producte nouProducte = donatUnNouProducte(nom, tipus, 0, unitat, quantitat, disponible);
+        Producte nouProducte = donatUnProducte(nom, tipus, 0, unitat, quantitat, disponible);
         PeticioAltraProducte peticio = donadaUnaPeticioDAltaDeProducte(nouProducte);
 
         mvc.perform(post("/altaproducte")
@@ -173,7 +175,7 @@ public class ProducteControllerHaDe {
 
         donatUnUsuari(Rol.PROVEIDOR);
         donatUnCodiDAccesValid();
-        Producte nouProducte = donatUnNouProducte(nom, tipus, preu, null, quantitat, disponible);
+        Producte nouProducte = donatUnProducte(nom, tipus, preu, null, quantitat, disponible);
         PeticioAltraProducte peticio = donadaUnaPeticioDAltaDeProducte(nouProducte);
 
         mvc.perform(post("/altaproducte")
@@ -189,7 +191,7 @@ public class ProducteControllerHaDe {
 
         donatUnUsuari(Rol.PROVEIDOR);
         donatUnCodiDAccesValid();
-        Producte nouProducte = donatUnNouProducte(nom, tipus, preu, unitat, -2, disponible);
+        Producte nouProducte = donatUnProducte(nom, tipus, preu, unitat, -2, disponible);
         PeticioAltraProducte peticio = donadaUnaPeticioDAltaDeProducte(nouProducte);
 
         mvc.perform(post("/altaproducte")
@@ -205,7 +207,7 @@ public class ProducteControllerHaDe {
 
         donatUnUsuari(Rol.PROVEIDOR);
         donatUnCodiDAccesValid();
-        Producte nouProducte = donatUnNouProducte(nom, tipus, preu, unitat, quantitat, disponible);
+        Producte nouProducte = donatUnProducte(nom, tipus, preu, unitat, quantitat, disponible);
         PeticioAltraProducte peticio = donadaUnaPeticioDAltaDeProducte(nouProducte);
 
         mvc.perform(post("/altaproducte")
@@ -215,6 +217,387 @@ public class ProducteControllerHaDe {
                 .andExpect(content().string(containsString("Producte donat d'alta amb l'identificador ")));
 
         Mockito.verify(producteRepository).save(Mockito.any());
+    }
+
+    @Test
+    public void retornarLaLlistaDelsSeusProductesAUnProveidor()
+            throws Exception {
+        Usuari usuari = donatUnUsuari(Rol.PROVEIDOR);
+        donatUnCodiDAccesValid();
+
+        mvc.perform(get("/productes/" + codiAcces)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        Mockito.verify(producteRepository).findProducteByIdUsuariAndEliminatIsFalse(usuari);
+    }
+
+    @Test
+    public void retornarLaLlistaDeProductesNoEliminatsAUnClient()
+            throws Exception {
+        donatUnUsuari(Rol.CLIENT);
+        donatUnCodiDAccesValid();
+
+        mvc.perform(get("/productes/" + codiAcces)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        Mockito.verify(producteRepository).findProducteByEliminatIsFalse();
+    }
+
+    @Test
+    public void retornarLaLlistaDeTotsElsProductesAUnAdministrador()
+            throws Exception {
+        donatUnUsuari(Rol.ADMINISTRADOR);
+        donatUnCodiDAccesValid();
+
+        mvc.perform(get("/productes/" + codiAcces)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        Mockito.verify(producteRepository).findAll();
+    }
+
+    @Test
+    public void DonarDeBaixaUnProducte()
+            throws Exception {
+        Usuari usuari = donatUnUsuari(Rol.PROVEIDOR);
+        donatUnCodiDAccesValid();
+        Producte producte = donatUnProducteDUnProveidor(usuari);
+
+        mvc.perform(delete("/baixaproducte/" + codiAcces + "/" + idProducte)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Producte donat de baixa")));
+
+        assertThat(producte.getEliminat()).isTrue();
+    }
+
+    @Test
+    public void retornarErrorSiUnUusariClientVolDonarDeBaixaUnProducte()
+            throws Exception {
+
+        donatUnUsuari(Rol.CLIENT);
+        donatUnCodiDAccesValid();
+
+        mvc.perform(delete("/baixaproducte/" + codiAcces + "/" + idProducte)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isMethodNotAllowed())
+                .andExpect(result -> assertEquals("Aquesta funcionalitat requereix el rol de proveïdor", result.getResolvedException().getMessage()));
+    }
+
+    @Test
+    public void retornarErrorSiSIntentaDonarDeBaixaUnProducteQueNoExisteix()
+            throws Exception {
+
+        donatUnUsuari(Rol.PROVEIDOR);
+        donatUnCodiDAccesValid();
+
+        mvc.perform(delete("/baixaproducte/" + codiAcces + "/unIdProducteNoExistent")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertEquals("No s'ha trobat cap producte amb l'identificador unIdProducteNoExistent", result.getResolvedException().getMessage()));
+    }
+
+    @Test
+    public void retornarErrorSiSIntentaDonarDeBaixaUnProducteDUnAltreProveidor()
+            throws Exception {
+
+        donatUnUsuari(Rol.PROVEIDOR);
+        donatUnCodiDAccesValid();
+        Usuari unAltreProveidor = donatUnUsuari(Rol.PROVEIDOR);
+        unAltreProveidor.setIdUsuari("unAltreIdUsuari");
+        donatUnProducteDUnProveidor(unAltreProveidor);
+
+        mvc.perform(delete("/baixaproducte/" + codiAcces + "/" + idProducte)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertEquals("No s'ha trobat cap producte amb l'identificador idProducte", result.getResolvedException().getMessage()));
+    }
+
+    @Test
+    public void guardarElProducteComEliminatAlDonarloDeBaixa()
+            throws Exception {
+        Usuari usuari = donatUnUsuari(Rol.PROVEIDOR);
+        donatUnCodiDAccesValid();
+        donatUnProducteDUnProveidor(usuari);
+
+        mvc.perform(delete("/baixaproducte/" + codiAcces + "/" + idProducte)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Producte donat de baixa")));
+
+        Mockito.verify(producteRepository).save(Mockito.any());
+    }
+
+    @Test
+    public void retornarErrorSiUnUsuariClientVolEditarUnProducte()
+            throws Exception {
+        donatUnUsuari(Rol.CLIENT);
+        donatUnCodiDAccesValid();
+        ProducteVisualitzacio producte = donatUnProducteAEditar(idProducte, nom, tipus, unitat, quantitat, preu, descripcio, disponible, null);
+
+        mvc.perform(put("/editarproducte/" + codiAcces)
+                .content(objectmapper.writeValueAsString(producte))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isMethodNotAllowed())
+                .andExpect(result -> assertEquals("Aquesta funcionalitat requereix el rol de proveïdor", result.getResolvedException().getMessage()));
+    }
+
+    @Test
+    public void retornarErrorSiNoSInformaElIdDeProducteAlEditarUnProducte()
+            throws Exception {
+        donatUnUsuari(Rol.PROVEIDOR);
+        donatUnCodiDAccesValid();
+        ProducteVisualitzacio producte = donatUnProducteAEditar(null, null, null, null, null, null, null, null, null);
+
+        mvc.perform(put("/editarproducte/" + codiAcces)
+                .content(objectmapper.writeValueAsString(producte))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> assertEquals("El camp id producte és obligatori", result.getResolvedException().getMessage()));
+    }
+
+    @Test
+    public void retornarErrorSiSIntentaEditarUnProducteQueNoExisteix()
+            throws Exception {
+
+        donatUnUsuari(Rol.PROVEIDOR);
+        donatUnCodiDAccesValid();
+        ProducteVisualitzacio producte = donatUnProducteAEditar("unIdDeProducteNoExistent", nom, tipus, unitat, quantitat, preu, descripcio, disponible, null);
+
+        mvc.perform(put("/editarproducte/" + codiAcces)
+                .content(objectmapper.writeValueAsString(producte))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertEquals("No s'ha trobat cap producte amb l'identificador unIdDeProducteNoExistent", result.getResolvedException().getMessage()));
+    }
+
+    @Test
+    public void retornarErrorSiSIntentaEditarUnProducteDUnAltreProveidor()
+            throws Exception {
+
+        donatUnUsuari(Rol.PROVEIDOR);
+        donatUnCodiDAccesValid();
+        donatUnProducteDUnAltreProveidor();
+        ProducteVisualitzacio producte = donatUnProducteAEditar(idProducte, nom, tipus, unitat, quantitat, preu, descripcio, disponible, null);
+
+        mvc.perform(put("/editarproducte/" + codiAcces)
+                .content(objectmapper.writeValueAsString(producte))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertEquals("No s'ha trobat cap producte amb l'identificador idProducte", result.getResolvedException().getMessage()));
+    }
+
+    @Test
+    public void editarElNomDUnProducte()
+            throws Exception {
+
+        String nouNom = "nouNom";
+        Usuari usuari = donatUnUsuari(Rol.PROVEIDOR);
+        donatUnCodiDAccesValid();
+        donatUnProducteDUnProveidor(usuari);
+        ProducteVisualitzacio producteAEditar = donatUnProducteAEditar(idProducte, nouNom, null, null, null, null, null, null, null);
+
+        mvc.perform(put("/editarproducte/" + codiAcces)
+                .content(objectmapper.writeValueAsString(producteAEditar))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        ArgumentCaptor<Producte> argument = ArgumentCaptor.forClass(Producte.class);
+        Mockito.verify(producteRepository).save(argument.capture());
+        assertThat(argument.getValue().getNom()).isEqualTo(nouNom);
+    }
+
+    @Test
+    public void editarLaDescripcioDUnProducte()
+            throws Exception {
+
+        String novaDescripcio = "novaDescripcio";
+        Usuari usuari = donatUnUsuari(Rol.PROVEIDOR);
+        donatUnCodiDAccesValid();
+        donatUnProducteDUnProveidor(usuari);
+        ProducteVisualitzacio producteAEditar = donatUnProducteAEditar(idProducte, null, null, null, null, null, novaDescripcio, null, null);
+
+        mvc.perform(put("/editarproducte/" + codiAcces)
+                .content(objectmapper.writeValueAsString(producteAEditar))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        ArgumentCaptor<Producte> argument = ArgumentCaptor.forClass(Producte.class);
+        Mockito.verify(producteRepository).save(argument.capture());
+        assertThat(argument.getValue().getDescripcio()).isEqualTo(novaDescripcio);
+    }
+
+    @Test
+    public void editarLesUnitatsDUnProducte()
+            throws Exception {
+
+        String novesUnitats = "novesUnitats";
+        Usuari usuari = donatUnUsuari(Rol.PROVEIDOR);
+        donatUnCodiDAccesValid();
+        donatUnProducteDUnProveidor(usuari);
+        ProducteVisualitzacio producteAEditar = donatUnProducteAEditar(idProducte, null, null, novesUnitats, null, null, null, null, null);
+
+        mvc.perform(put("/editarproducte/" + codiAcces)
+                .content(objectmapper.writeValueAsString(producteAEditar))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        ArgumentCaptor<Producte> argument = ArgumentCaptor.forClass(Producte.class);
+        Mockito.verify(producteRepository).save(argument.capture());
+        assertThat(argument.getValue().getUnitats()).isEqualTo(novesUnitats);
+    }
+
+    @Test
+    public void editarElTipusDUnProducte()
+            throws Exception {
+
+        Categoria nouTipus = Categoria.Carn;
+        Usuari usuari = donatUnUsuari(Rol.PROVEIDOR);
+        donatUnCodiDAccesValid();
+        donatUnProducteDUnProveidor(usuari);
+        ProducteVisualitzacio producteAEditar = donatUnProducteAEditar(idProducte, null, nouTipus, null, null, null, null, null, null);
+
+        mvc.perform(put("/editarproducte/" + codiAcces)
+                .content(objectmapper.writeValueAsString(producteAEditar))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        ArgumentCaptor<Producte> argument = ArgumentCaptor.forClass(Producte.class);
+        Mockito.verify(producteRepository).save(argument.capture());
+        assertThat(argument.getValue().getTipus()).isEqualTo(nouTipus);
+    }
+
+    @Test
+    public void editarElPreuDUnProducte()
+            throws Exception {
+
+        double nouPreu = 23.4;
+        Usuari usuari = donatUnUsuari(Rol.PROVEIDOR);
+        donatUnCodiDAccesValid();
+        donatUnProducteDUnProveidor(usuari);
+        ProducteVisualitzacio producteAEditar = donatUnProducteAEditar(idProducte, null, null, null, null, nouPreu, null, null, null);
+
+        mvc.perform(put("/editarproducte/" + codiAcces)
+                .content(objectmapper.writeValueAsString(producteAEditar))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        ArgumentCaptor<Producte> argument = ArgumentCaptor.forClass(Producte.class);
+        Mockito.verify(producteRepository).save(argument.capture());
+        assertThat(argument.getValue().getPreu()).isEqualTo(nouPreu);
+    }
+
+    @Test
+    public void retornarErrorSiEsVolEditarElPreuDUnProducteAmbUnValorNegatiu()
+            throws Exception {
+
+        double nouPreu = -23.4;
+        Usuari usuari = donatUnUsuari(Rol.PROVEIDOR);
+        donatUnCodiDAccesValid();
+        donatUnProducteDUnProveidor(usuari);
+        ProducteVisualitzacio producteAEditar = donatUnProducteAEditar(idProducte, null, null, null, null, nouPreu, null, null, null);
+
+        mvc.perform(put("/editarproducte/" + codiAcces)
+                .content(objectmapper.writeValueAsString(producteAEditar))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> assertEquals("El valor del preu no pot ser negatiu", result.getResolvedException().getMessage()));
+    }
+
+    @Test
+    public void editarLaQuantitatPerUnitatDUnProducte()
+            throws Exception {
+
+        double novaQuantitatPerUnitat = 5.7;
+        Usuari usuari = donatUnUsuari(Rol.PROVEIDOR);
+        donatUnCodiDAccesValid();
+        donatUnProducteDUnProveidor(usuari);
+        ProducteVisualitzacio producteAEditar = donatUnProducteAEditar(idProducte, null, null, null, novaQuantitatPerUnitat, null, null, null, null);
+
+        mvc.perform(put("/editarproducte/" + codiAcces)
+                .content(objectmapper.writeValueAsString(producteAEditar))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        ArgumentCaptor<Producte> argument = ArgumentCaptor.forClass(Producte.class);
+        Mockito.verify(producteRepository).save(argument.capture());
+        assertThat(argument.getValue().getQuantitatPerUnitat()).isEqualTo(novaQuantitatPerUnitat);
+    }
+
+    @Test
+    public void retornarErrorSiEsVolEditarLaQuantitatPerUnitatDUnProducteAmbUnValorNegatiu()
+            throws Exception {
+
+        double novaQuantitatPerUnitat = -5.7;
+        Usuari usuari = donatUnUsuari(Rol.PROVEIDOR);
+        donatUnCodiDAccesValid();
+        donatUnProducteDUnProveidor(usuari);
+        ProducteVisualitzacio producteAEditar = donatUnProducteAEditar(idProducte, null, null, null, novaQuantitatPerUnitat, null, null, null, null);
+
+        mvc.perform(put("/editarproducte/" + codiAcces)
+                .content(objectmapper.writeValueAsString(producteAEditar))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> assertEquals("El valor del camp quantitat per unitat no pot ser negatiu", result.getResolvedException().getMessage()));
+    }
+
+    @Test
+    public void editarLaDisponibilitatDUnProducte()
+            throws Exception {
+
+        Boolean disponible = false;
+        Usuari usuari = donatUnUsuari(Rol.PROVEIDOR);
+        donatUnCodiDAccesValid();
+        donatUnProducteDUnProveidor(usuari);
+        ProducteVisualitzacio producteAEditar = donatUnProducteAEditar(idProducte, null, null, null, null, null, null, disponible, null);
+
+        mvc.perform(put("/editarproducte/" + codiAcces)
+                .content(objectmapper.writeValueAsString(producteAEditar))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        ArgumentCaptor<Producte> argument = ArgumentCaptor.forClass(Producte.class);
+        Mockito.verify(producteRepository).save(argument.capture());
+        assertThat(argument.getValue().isDisponible()).isFalse();
+    }
+
+    @Test
+    public void editarLaImatgeDUnProducte()
+            throws Exception {
+
+        byte[] novaImatge = donatUnaImatgeEnBytes();
+        Usuari usuari = donatUnUsuari(Rol.PROVEIDOR);
+        donatUnCodiDAccesValid();
+        donatUnProducteDUnProveidor(usuari);
+        ProducteVisualitzacio producteAEditar = donatUnProducteAEditar(idProducte, null, null, null, null, null, null, null, novaImatge);
+
+        mvc.perform(put("/editarproducte/" + codiAcces)
+                .content(objectmapper.writeValueAsString(producteAEditar))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        ArgumentCaptor<Producte> argument = ArgumentCaptor.forClass(Producte.class);
+        Mockito.verify(producteRepository).save(argument.capture());
+        assertThat(argument.getValue().getImatge()).isEqualTo(novaImatge);
+    }
+
+    private void donatUnProducteDUnAltreProveidor() throws IOException {
+        Usuari unAltreProveidor = donatUnUsuari(Rol.PROVEIDOR);
+        unAltreProveidor.setIdUsuari("unAltreIdUsuari");
+        donatUnProducteDUnProveidor(unAltreProveidor);
+    }
+
+    private ProducteVisualitzacio donatUnProducteAEditar(String idProducte, String nom, Categoria tipus, String unitat, Double quantitat, Double preu, String descripcio, Boolean disponible, byte[] imatge) {
+        return new ProducteVisualitzacio(idProducte, idUsuari, nom, tipus, unitat, quantitat, preu, descripcio, disponible, imatge);
+    }
+
+    private Producte donatUnProducteDUnProveidor(Usuari usuari) throws IOException {
+        Producte producte = donatUnProducte(nom, tipus, preu, unitat, quantitat, disponible);
+        producte.setUsuari(usuari);
+        Mockito.when(producteRepository.findByIdProducte(idProducte)).thenReturn(producte);
+        return producte;
     }
 
     private void donatUnCodiDAccesValid() {
@@ -228,11 +611,8 @@ public class ProducteControllerHaDe {
         return peticio;
     }
 
-    private Producte donatUnNouProducte(String nom, Categoria tipus, int preu, String unitat, int quantitat, Boolean disponible) throws IOException {
-        BufferedImage bImage = ImageIO.read(new File("src/test/java/botigaprop/servidor/imatgepeix.png"));
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ImageIO.write(bImage, "png", bos );
-        byte [] imatgeEnByte = bos.toByteArray();
+    private Producte donatUnProducte(String nom, Categoria tipus, double preu, String unitat, double quantitat, Boolean disponible) throws IOException {
+        byte[] imatgeEnByte = donatUnaImatgeEnBytes();
 
         Producte producte = new Producte();
         producte.setNom(nom);
@@ -245,6 +625,14 @@ public class ProducteControllerHaDe {
         producte.setImatge(imatgeEnByte);
 
         return producte;
+    }
+
+    private byte[] donatUnaImatgeEnBytes() throws IOException {
+        BufferedImage bImage = ImageIO.read(new File("src/test/java/botigaprop/servidor/imatgepeix.png"));
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ImageIO.write(bImage, "png", bos );
+        byte [] imatgeEnByte = bos.toByteArray();
+        return imatgeEnByte;
     }
 
     private Usuari donatUnUsuari(Rol rol) {
