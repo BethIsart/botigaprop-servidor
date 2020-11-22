@@ -109,6 +109,18 @@ public class UsuariController {
         return usuaris;
     }
 
+    @PutMapping("/editarusuari/{codiAcces}")
+    public Usuari editarUsuari(@RequestBody PeticioEdicioUsuari usuariEditat, @PathVariable String codiAcces)
+    {
+        log.trace("Petició d'edició d'usuari del codi " + codiAcces);
+
+        String idUsuari = controlAcces.ValidarCodiAcces(codiAcces);
+        ValidarUsuariProveidor(idUsuari);
+        Usuari usuariActualitzat = ActualitzarUsuari(idUsuari, usuariEditat);
+
+        return usuariActualitzat;
+    }
+
     private void InicialitzarCampsNouUsuari(Usuari nouUsuari) {
         nouUsuari.setIdUsuari(UUID.randomUUID().toString());
         nouUsuari.setDataCreacio(new Date());
@@ -252,5 +264,46 @@ public class UsuariController {
         usuari.setDeshabilitat(true);
         repository.save(usuari);
         log.info("Deshabilitat l'usuari amb identificador "+usuari.getIdUsuari());
+    }
+
+    private void ValidarUsuariProveidor(String idUsuari) {
+        Usuari usuari = repository.findByIdUsuari(idUsuari);
+        if (usuari.getRol() != Rol.PROVEIDOR)
+        {
+            throw new UsuariNotAllowedException("Aquesta funcionalitat requereix el rol de proveïdor");
+        }
+    }
+
+    private Usuari ActualitzarUsuari(String idUsuari, PeticioEdicioUsuari usuariEditat) {
+
+        Usuari usuari = repository.findByIdUsuari(idUsuari);
+
+        if (usuariEditat.getNom() != null && !usuariEditat.getNom().isEmpty())
+        {
+            usuari.setNom(usuariEditat.getNom());
+        }
+
+        if (usuariEditat.getCifEmpresa() != null && !usuariEditat.getCifEmpresa().isEmpty())
+        {
+            usuari.setCifEmpresa(usuariEditat.getCifEmpresa());
+        }
+
+        if (usuariEditat.getDireccio() != null && !usuariEditat.getDireccio().isEmpty())
+        {
+            usuari.setDireccio(usuariEditat.getDireccio());
+        }
+
+        if (usuariEditat.getPoblacio() != null && !usuariEditat.getPoblacio().isEmpty())
+        {
+            usuari.setPoblacio(usuariEditat.getPoblacio());
+        }
+
+        if (usuariEditat.getProvincia() != null && !usuariEditat.getProvincia().isEmpty())
+        {
+            usuari.setProvincia(usuariEditat.getProvincia());
+        }
+
+        repository.save(usuari);
+        return usuari;
     }
 }

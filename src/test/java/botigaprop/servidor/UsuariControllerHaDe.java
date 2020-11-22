@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -235,7 +236,7 @@ public class UsuariControllerHaDe {
             throws Exception {
 
         DadesAcces dadesAcces = donatLesDadesDAccesDUnUsuari(email, unaContrasenya);
-        Usuari usuari = donatUnUsuariRegistrat();
+        Usuari usuari = donatUnUsuariRegistrat(Rol.CLIENT);
         Mockito.when(controlAcces.GenerarCodiAcces(usuari)).thenReturn(codiAcces);
 
         mvc.perform(post("/login")
@@ -290,7 +291,7 @@ public class UsuariControllerHaDe {
             throws Exception {
 
         DadesAcces dadesAcces = donatLesDadesDAccesDUnUsuari(email, "unaContrasenyaErronea");
-        donatUnUsuariRegistrat();
+        donatUnUsuariRegistrat(Rol.CLIENT);
 
         mvc.perform(post("/login")
                 .content(objectmapper.writeValueAsString(dadesAcces))
@@ -304,7 +305,7 @@ public class UsuariControllerHaDe {
             throws Exception {
 
         DadesAcces dadesAcces = donatLesDadesDAccesDUnUsuari(email, unaContrasenya);
-        Usuari usuari = donatUnUsuariRegistrat();
+        Usuari usuari = donatUnUsuariRegistrat(Rol.CLIENT);
         usuari.setDeshabilitat(true);
 
         mvc.perform(post("/login")
@@ -319,7 +320,7 @@ public class UsuariControllerHaDe {
             throws Exception {
 
         DadesAcces dadesAcces = donatLesDadesDAccesDUnUsuari(email, unaContrasenya);
-        donatUnUsuariRegistrat();
+        donatUnUsuariRegistrat(Rol.CLIENT);
         donatUnCodiDAccesValid();
 
         mvc.perform(get("/logout/" + codiAcces)
@@ -334,7 +335,7 @@ public class UsuariControllerHaDe {
             throws Exception {
 
         PeticioCanviContrasenya peticio = donadaUnaPeticioDeNovaContrasenya("novaContrasenya");
-        Usuari usuari = donatUnUsuariRegistrat();
+        Usuari usuari = donatUnUsuariRegistrat(Rol.CLIENT);
         donatUnCodiDAccesValid();
 
         mvc.perform(put("/canviarContrasenya/" + codiAcces)
@@ -351,7 +352,7 @@ public class UsuariControllerHaDe {
             throws Exception {
 
         PeticioCanviContrasenya peticio = donadaUnaPeticioDeNovaContrasenya(null);
-        donatUnUsuariRegistrat();
+        donatUnUsuariRegistrat(Rol.CLIENT);
         donatUnCodiDAccesValid();
 
         mvc.perform(put("/canviarContrasenya/" + codiAcces)
@@ -366,7 +367,7 @@ public class UsuariControllerHaDe {
         throws Exception {
 
         PeticioDeshabilitarUsuari peticio = donadaUnaPeticioDeDeshabilitarUsuari(idUsuari);
-        Usuari usuari = donatUnUsuariRegistrat();
+        Usuari usuari = donatUnUsuariRegistrat(Rol.CLIENT);
         donatUnUsuariAdministrador();
         donatUnCodiDAccesValidPelUsuariAdministrador();
 
@@ -400,7 +401,7 @@ public class UsuariControllerHaDe {
             throws Exception {
 
         PeticioDeshabilitarUsuari peticio = donadaUnaPeticioDeDeshabilitarUsuari(idUsuari);
-        donatUnUsuariRegistrat();
+        donatUnUsuariRegistrat(Rol.CLIENT);
         donatUnCodiDAccesValid();
 
         mvc.perform(delete("/baixa/" + codiAcces)
@@ -442,13 +443,133 @@ public class UsuariControllerHaDe {
     public void retornarErrorSiUnUsuariNoAdministradorIntentaLlistaElsUsuaris()
             throws Exception {
 
-        donatUnUsuariRegistrat();
+        donatUnUsuariRegistrat(Rol.CLIENT);
         donatUnCodiDAccesValid();
 
         mvc.perform(get("/usuaris/" + codiAcces)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isMethodNotAllowed())
                 .andExpect(result -> assertEquals("Aquest usuari no té permís d'administrador", result.getResolvedException().getMessage()));
+    }
+
+    @Test
+    public void editarElNomDUnUsuari()
+            throws Exception {
+
+        donatUnUsuariRegistrat(Rol.PROVEIDOR);
+        donatUnCodiDAccesValid();
+        String nouNom = "nouNom";
+        PeticioEdicioUsuari peticio = new PeticioEdicioUsuari();
+        peticio.setNom(nouNom);
+
+        MvcResult result = mvc.perform(put("/editarusuari/" + codiAcces)
+                .content(objectmapper.writeValueAsString(peticio))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String contentAsString = result.getResponse().getContentAsString();
+        Usuari usuariEditat = objectmapper.readValue(contentAsString, Usuari.class);
+        assertThat(usuariEditat.getNom()).isEqualTo(nouNom);
+    }
+
+    @Test
+    public void editarElCifEmpresaDUnUsuari()
+            throws Exception {
+
+        donatUnUsuariRegistrat(Rol.PROVEIDOR);
+        donatUnCodiDAccesValid();
+        String nouCif = "nouCif";
+        PeticioEdicioUsuari peticio = new PeticioEdicioUsuari();
+        peticio.setCifEmpresa(nouCif);
+
+        MvcResult result = mvc.perform(put("/editarusuari/" + codiAcces)
+                .content(objectmapper.writeValueAsString(peticio))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String contentAsString = result.getResponse().getContentAsString();
+        Usuari usuariEditat = objectmapper.readValue(contentAsString, Usuari.class);
+        assertThat(usuariEditat.getCifEmpresa()).isEqualTo(nouCif);
+    }
+
+    @Test
+    public void editarLaDireccioDUnUsuari()
+            throws Exception {
+
+        donatUnUsuariRegistrat(Rol.PROVEIDOR);
+        donatUnCodiDAccesValid();
+        String novaDireccio = "novaDireccio";
+        PeticioEdicioUsuari peticio = new PeticioEdicioUsuari();
+        peticio.setDireccio(novaDireccio);
+
+        MvcResult result = mvc.perform(put("/editarusuari/" + codiAcces)
+                .content(objectmapper.writeValueAsString(peticio))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String contentAsString = result.getResponse().getContentAsString();
+        Usuari usuariEditat = objectmapper.readValue(contentAsString, Usuari.class);
+        assertThat(usuariEditat.getDireccio()).isEqualTo(novaDireccio);
+    }
+
+    @Test
+    public void editarLaPoblacioDUnUsuari()
+            throws Exception {
+
+        donatUnUsuariRegistrat(Rol.PROVEIDOR);
+        donatUnCodiDAccesValid();
+        String novaPoblacio = "novaPoblacio";
+        PeticioEdicioUsuari peticio = new PeticioEdicioUsuari();
+        peticio.setPoblacio(novaPoblacio);
+
+        MvcResult result = mvc.perform(put("/editarusuari/" + codiAcces)
+                .content(objectmapper.writeValueAsString(peticio))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String contentAsString = result.getResponse().getContentAsString();
+        Usuari usuariEditat = objectmapper.readValue(contentAsString, Usuari.class);
+        assertThat(usuariEditat.getPoblacio()).isEqualTo(novaPoblacio);
+    }
+
+    @Test
+    public void editarLaProvinciaDUnUsuari()
+            throws Exception {
+
+        donatUnUsuariRegistrat(Rol.PROVEIDOR);
+        donatUnCodiDAccesValid();
+        String novaProvincia = "novaProvincia";
+        PeticioEdicioUsuari peticio = new PeticioEdicioUsuari();
+        peticio.setProvincia(novaProvincia);
+
+        MvcResult result = mvc.perform(put("/editarusuari/" + codiAcces)
+                .content(objectmapper.writeValueAsString(peticio))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String contentAsString = result.getResponse().getContentAsString();
+        Usuari usuariEditat = objectmapper.readValue(contentAsString, Usuari.class);
+        assertThat(usuariEditat.getProvincia()).isEqualTo(novaProvincia);
+    }
+
+    @Test
+    public void retornarErrorSiUnUsuariNoProveidorIntentaEditarLesSevesDades()
+            throws Exception {
+
+        donatUnUsuariRegistrat(Rol.CLIENT);
+        donatUnCodiDAccesValid();
+        PeticioEdicioUsuari peticio = new PeticioEdicioUsuari();
+
+        mvc.perform(put("/editarusuari/" + codiAcces)
+                .content(objectmapper.writeValueAsString(peticio))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isMethodNotAllowed())
+                .andExpect(result -> assertEquals("Aquesta funcionalitat requereix el rol de proveïdor", result.getResolvedException().getMessage()));
     }
 
     private DadesAcces donatLesDadesDAccesDUnUsuari(String emailPeticio, String contrasenyaPeticio) {
@@ -458,8 +579,8 @@ public class UsuariControllerHaDe {
         return dades;
     }
 
-    private Usuari donatUnUsuariRegistrat() {
-        Usuari usuari = donatUnNouUsuari(idUsuari, email, contrasenyaXifrada, Rol.CLIENT, null, null, null, null, null);
+    private Usuari donatUnUsuariRegistrat(Rol rol) {
+        Usuari usuari = donatUnNouUsuari(idUsuari, email, contrasenyaXifrada, rol, null, null, null, null, null);
         List<Usuari> usuaris = new ArrayList<Usuari>(Arrays.asList(usuari));
         Mockito.when(usuariRepository.findUsuariByEmailAndDeshabilitatIsFalse(email)).thenReturn(usuaris);
         Mockito.when(usuariRepository.findByIdUsuari(idUsuari)).thenReturn(usuari);

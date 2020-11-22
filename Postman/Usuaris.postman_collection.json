@@ -31,7 +31,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"email\":\"anEmail@email.com\",\r\n    \"contrasenya\":\"1234\",\r\n    \"rol\":\"CLIENT\"\r\n}",
+					"raw": "{\r\n    \"email\":\"anEmail@email.com\",\r\n    \"contrasenya\":\"1234\",\r\n    \"rol\":\"PROVEIDOR\",\r\n    \"nom\":\"unNom\",\r\n    \"cifEmpresa\":\"unCif\",\r\n    \"direccio\":\"unaDireccio\",\r\n    \"poblacio\":\"unaPoblacio\",\r\n    \"provincia\":\"unaProvincia\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -154,6 +154,34 @@
 					"port": "8080",
 					"path": [
 						"baixa",
+						"codiAcces"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Editar usuari",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"nom\":\"unNom\",\r\n    \"cifEmpresa\":\"unCif\",\r\n    \"direccio\":\"unaDireccio\",\r\n    \"poblacio\":\"unaPoblacio\",\r\n    \"provincia\":\"unaProvincia\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/editarusuari/codiAcces",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"editarusuari",
 						"codiAcces"
 					]
 				}
