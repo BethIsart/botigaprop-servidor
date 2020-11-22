@@ -121,6 +121,20 @@ public class UsuariController {
         return usuariActualitzat;
     }
 
+    @GetMapping("/usuari/{codiAcces}")
+    public Usuari Usuari(@PathVariable String codiAcces) {
+
+        //TODO REVISAR I AFAGIR
+        log.trace("Petició de mostrar les dades d'usuari del codi " + codiAcces);
+
+        String idUsuari = controlAcces.ValidarCodiAcces(codiAcces);
+
+        Usuari usuari = repository.findByIdUsuari(idUsuari);
+
+        log.trace("Retornat usuari");
+        return usuari;
+    }
+
     private void InicialitzarCampsNouUsuari(Usuari nouUsuari) {
         nouUsuari.setIdUsuari(UUID.randomUUID().toString());
         nouUsuari.setDataCreacio(new Date());
