@@ -65,7 +65,7 @@ public class ProducteControllerHaDe {
         donatUnUsuari(Rol.PROVEIDOR);
         donatUnCodiDAccesValid();
         Producte nouProducte = donatUnProducte(nom, tipus, preu, unitat, quantitat, disponible);
-        PeticioAltraProducte peticio = donadaUnaPeticioDAltaDeProducte(nouProducte);
+        PeticioAltaProducte peticio = donadaUnaPeticioDAltaDeProducte(nouProducte);
 
         mvc.perform(post("/altaproducte")
                 .content(objectmapper.writeValueAsString(peticio))
@@ -81,7 +81,7 @@ public class ProducteControllerHaDe {
         donatUnUsuari(Rol.CLIENT);
         donatUnCodiDAccesValid();
         Producte nouProducte = donatUnProducte(nom, tipus, preu, unitat, quantitat, disponible);
-        PeticioAltraProducte peticio = donadaUnaPeticioDAltaDeProducte(nouProducte);
+        PeticioAltaProducte peticio = donadaUnaPeticioDAltaDeProducte(nouProducte);
 
         mvc.perform(post("/altaproducte")
                 .content(objectmapper.writeValueAsString(peticio))
@@ -96,7 +96,7 @@ public class ProducteControllerHaDe {
 
         donatUnUsuari(Rol.PROVEIDOR);
         donatUnCodiDAccesValid();
-        PeticioAltraProducte peticio = donadaUnaPeticioDAltaDeProducte(null);
+        PeticioAltaProducte peticio = donadaUnaPeticioDAltaDeProducte(null);
 
         mvc.perform(post("/altaproducte")
                 .content(objectmapper.writeValueAsString(peticio))
@@ -112,7 +112,7 @@ public class ProducteControllerHaDe {
         donatUnUsuari(Rol.PROVEIDOR);
         donatUnCodiDAccesValid();
         Producte nouProducte = donatUnProducte(null, tipus, preu, unitat, quantitat, disponible);
-        PeticioAltraProducte peticio = donadaUnaPeticioDAltaDeProducte(nouProducte);
+        PeticioAltaProducte peticio = donadaUnaPeticioDAltaDeProducte(nouProducte);
 
         mvc.perform(post("/altaproducte")
                 .content(objectmapper.writeValueAsString(peticio))
@@ -128,7 +128,7 @@ public class ProducteControllerHaDe {
         donatUnUsuari(Rol.PROVEIDOR);
         donatUnCodiDAccesValid();
         Producte nouProducte = donatUnProducte(nom, null, preu, unitat, quantitat, disponible);
-        PeticioAltraProducte peticio = donadaUnaPeticioDAltaDeProducte(nouProducte);
+        PeticioAltaProducte peticio = donadaUnaPeticioDAltaDeProducte(nouProducte);
 
         mvc.perform(post("/altaproducte")
                 .content(objectmapper.writeValueAsString(peticio))
@@ -144,7 +144,7 @@ public class ProducteControllerHaDe {
         donatUnUsuari(Rol.PROVEIDOR);
         donatUnCodiDAccesValid();
         Producte nouProducte = donatUnProducte(nom, tipus, -1, unitat, quantitat, disponible);
-        PeticioAltraProducte peticio = donadaUnaPeticioDAltaDeProducte(nouProducte);
+        PeticioAltaProducte peticio = donadaUnaPeticioDAltaDeProducte(nouProducte);
 
         mvc.perform(post("/altaproducte")
                 .content(objectmapper.writeValueAsString(peticio))
@@ -160,7 +160,7 @@ public class ProducteControllerHaDe {
         donatUnUsuari(Rol.PROVEIDOR);
         donatUnCodiDAccesValid();
         Producte nouProducte = donatUnProducte(nom, tipus, 0, unitat, quantitat, disponible);
-        PeticioAltraProducte peticio = donadaUnaPeticioDAltaDeProducte(nouProducte);
+        PeticioAltaProducte peticio = donadaUnaPeticioDAltaDeProducte(nouProducte);
 
         mvc.perform(post("/altaproducte")
                 .content(objectmapper.writeValueAsString(peticio))
@@ -176,7 +176,7 @@ public class ProducteControllerHaDe {
         donatUnUsuari(Rol.PROVEIDOR);
         donatUnCodiDAccesValid();
         Producte nouProducte = donatUnProducte(nom, tipus, preu, null, quantitat, disponible);
-        PeticioAltraProducte peticio = donadaUnaPeticioDAltaDeProducte(nouProducte);
+        PeticioAltaProducte peticio = donadaUnaPeticioDAltaDeProducte(nouProducte);
 
         mvc.perform(post("/altaproducte")
                 .content(objectmapper.writeValueAsString(peticio))
@@ -192,7 +192,7 @@ public class ProducteControllerHaDe {
         donatUnUsuari(Rol.PROVEIDOR);
         donatUnCodiDAccesValid();
         Producte nouProducte = donatUnProducte(nom, tipus, preu, unitat, -2, disponible);
-        PeticioAltraProducte peticio = donadaUnaPeticioDAltaDeProducte(nouProducte);
+        PeticioAltaProducte peticio = donadaUnaPeticioDAltaDeProducte(nouProducte);
 
         mvc.perform(post("/altaproducte")
                 .content(objectmapper.writeValueAsString(peticio))
@@ -208,7 +208,7 @@ public class ProducteControllerHaDe {
         donatUnUsuari(Rol.PROVEIDOR);
         donatUnCodiDAccesValid();
         Producte nouProducte = donatUnProducte(nom, tipus, preu, unitat, quantitat, disponible);
-        PeticioAltraProducte peticio = donadaUnaPeticioDAltaDeProducte(nouProducte);
+        PeticioAltaProducte peticio = donadaUnaPeticioDAltaDeProducte(nouProducte);
 
         mvc.perform(post("/altaproducte")
                 .content(objectmapper.writeValueAsString(peticio))
@@ -649,8 +649,8 @@ public class ProducteControllerHaDe {
         Mockito.when(controlAcces.ValidarCodiAcces(codiAcces)).thenReturn(idUsuari);
     }
 
-    private PeticioAltraProducte donadaUnaPeticioDAltaDeProducte(Producte producte) {
-        PeticioAltraProducte peticio = new PeticioAltraProducte();
+    private PeticioAltaProducte donadaUnaPeticioDAltaDeProducte(Producte producte) {
+        PeticioAltaProducte peticio = new PeticioAltaProducte();
         peticio.setCodiAcces(codiAcces);
         peticio.setProducte(producte);
         return peticio;

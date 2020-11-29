@@ -1,7 +1,6 @@
 package botigaprop.servidor.Models;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -16,9 +15,15 @@ public class Comanda {
     private String idComanda;
     private Date dataCreacio;
     private boolean cancellat;
+    private Date dataCancellacio;
+
     @ManyToOne
     @JoinColumn(name = "idUsuari", referencedColumnName = "idUsuari")
-    private Usuari idUsuari;
+    private Usuari client;
+
+    @ManyToOne
+    @JoinColumn(name = "idUsuari", referencedColumnName = "idUsuari")
+    private Usuari proveidor;
 
     @JoinTable(
             name = "linies_comanda",
@@ -52,20 +57,36 @@ public class Comanda {
         this.cancellat = cancellat;
     }
 
-    public Usuari getIdUsuari() {
-        return idUsuari;
-    }
-
-    public void setIdUsuari(Usuari idUsuari) {
-        this.idUsuari = idUsuari;
-    }
-
     public List<Producte> getProductes() {
         return productes;
     }
 
     public void setProductes(List<Producte> productes) {
         this.productes = productes;
+    }
+
+    public Usuari getClient() {
+        return client;
+    }
+
+    public void setClient(Usuari client) {
+        this.client = client;
+    }
+
+    public Usuari getProveidor() {
+        return proveidor;
+    }
+
+    public void setProveidor(Usuari proveidor) {
+        this.proveidor = proveidor;
+    }
+
+    public Date getDataCancellacio() {
+        return dataCancellacio;
+    }
+
+    public void setDataCancellacio(Date dataCancellacio) {
+        this.dataCancellacio = dataCancellacio;
     }
 }
 

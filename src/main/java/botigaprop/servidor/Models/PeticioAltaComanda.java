@@ -1,12 +1,15 @@
 package botigaprop.servidor.Models;
 
+import java.util.List;
+
 /**
  * @author Elisabet Isart
  */
-public class PeticioAltraProducte {
+public class PeticioAltaComanda {
 
     private String codiAcces;
-    private Producte producte;
+
+    private List<String> idProductes;
 
     public String getCodiAcces() {
         return codiAcces;
@@ -16,11 +19,11 @@ public class PeticioAltraProducte {
         this.codiAcces = codiAcces;
     }
 
-    public Producte getProducte() {
-        return producte;
+    public List<String> getIdProductes() {
+        return idProductes;
     }
 
-    public void setProducte(Producte producte) {
-        this.producte = producte;
+    public void setIdProductes(List<String> idProductes) {
+        this.idProductes = idProductes;
     }
 }

@@ -38,20 +38,20 @@ public class ProducteController {
     }
 
     @PostMapping("/altaproducte")
-    public String altaProducte(@RequestBody PeticioAltraProducte altraProducte) {
+    public String altaProducte(@RequestBody PeticioAltaProducte altaProducte) {
 
         log.trace("Rebuda petició d'alta de producte");
 
-        String idUsuari = controlAcces.ValidarCodiAcces(altraProducte.getCodiAcces());
+        String idUsuari = controlAcces.ValidarCodiAcces(altaProducte.getCodiAcces());
         ValidarUsuariProveidor(idUsuari);
-        ValidarCampsNouProducte(altraProducte.getProducte());
-        InicialitzarCampsNouProducte(altraProducte.getProducte(), idUsuari);
+        ValidarCampsNouProducte(altaProducte.getProducte());
+        InicialitzarCampsNouProducte(altaProducte.getProducte(), idUsuari);
 
-        producteRepository.save(altraProducte.getProducte());
+        producteRepository.save(altaProducte.getProducte());
 
-        log.info("Producte donat d'alta amb l'identificador " + altraProducte.getProducte().getIdProducte());
+        log.info("Producte donat d'alta amb l'identificador " + altaProducte.getProducte().getIdProducte());
 
-        return "Producte donat d'alta amb l'identificador " + altraProducte.getProducte().getIdProducte();
+        return "Producte donat d'alta amb l'identificador " + altaProducte.getProducte().getIdProducte();
     }
 
     @GetMapping("/productes/{codiAcces}")
