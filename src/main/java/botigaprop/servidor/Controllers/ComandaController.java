@@ -146,7 +146,7 @@ public class ComandaController {
         return productes;
     }
 
-    private Usuari ValidarProveidorProducte(Usuari proveidor, Producte producte) {
+    private void ValidarProveidorProducte(Usuari proveidor, Producte producte) {
 
         if (proveidor.getIdUsuari() == null)
         {
@@ -157,7 +157,5 @@ public class ComandaController {
         {
             throw new BadRequestException("No es pot crear una comanda amb productes de diferents proveïdors");
         }
-
-        return proveidor;
     }
 }
