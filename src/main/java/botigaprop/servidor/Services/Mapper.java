@@ -4,14 +4,13 @@ import botigaprop.servidor.Models.Domain.Comanda;
 import botigaprop.servidor.Models.Domain.LiniaComanda;
 import botigaprop.servidor.Models.Domain.Producte;
 import botigaprop.servidor.Models.Requests.ComandaVisualitzacio;
+import botigaprop.servidor.Models.Requests.LiniaComandaVisualitzacio;
 import botigaprop.servidor.Models.Requests.ProducteVisualitzacio;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Elisabet Isart
@@ -48,12 +47,12 @@ public class Mapper {
 
     public ComandaVisualitzacio ComandaAMostrar(Comanda comanda)
     {
-        Map<String, Integer> liniesComanda = new HashMap<>();
+        List<LiniaComandaVisualitzacio> liniesComanda = new ArrayList<>();
         for (LiniaComanda linia:comanda.getLinies())
         {
-            liniesComanda.put(linia.getProducte().getNom(), linia.getUnitats());
+            liniesComanda.add(new LiniaComandaVisualitzacio(linia.getProducte().getNom(), linia.getUnitats()));
         }
 
-        return new ComandaVisualitzacio(comanda.getClient().getEmail(), comanda.getDataCreacio(), liniesComanda);
+        return new ComandaVisualitzacio(comanda.getIdComanda(), comanda.getClient().getEmail(), comanda.getDataCreacio(), comanda.isCancellat(), liniesComanda);
     }
 }

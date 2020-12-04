@@ -11,6 +11,7 @@ import java.util.List;
  * @author Elisabet Isart
  */
 public interface ComandaRepository extends JpaRepository<Comanda, String>, JpaSpecificationExecutor<Comanda>  {
-    List<Comanda> findComandaByProveidorAndCancellatIsFalse(Usuari usuari);
+    List<Comanda> findComandaByProveidor(Usuari usuari);
+    List<Comanda> findComandaByClient(Usuari usuari);
     Comanda findByIdComanda(String idComanda);
 }

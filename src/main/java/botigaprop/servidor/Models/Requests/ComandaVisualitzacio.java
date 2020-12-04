@@ -1,23 +1,24 @@
 package botigaprop.servidor.Models.Requests;
 
-import botigaprop.servidor.Models.Domain.Producte;
-
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 /**
  * @author Elisabet Isart
  */
 public class ComandaVisualitzacio {
+    private String idComanda;
     private String emailClient;
     private Date dataCreacio;
-    private Map<String, Integer> liniesComanda;
+    private boolean cancellat;
+    private List<LiniaComandaVisualitzacio> liniesComanda;
 
-    public ComandaVisualitzacio(String emailClient, Date dataCreacio, Map<String, Integer> productes) {
+    public ComandaVisualitzacio(String idComanda, String emailClient, Date dataCreacio, boolean cancellat, List<LiniaComandaVisualitzacio> liniesComanda) {
+        this.idComanda = idComanda;
         this.emailClient = emailClient;
         this.dataCreacio = dataCreacio;
-        this.liniesComanda = productes;
+        this.cancellat = cancellat;
+        this.liniesComanda = liniesComanda;
     }
 
     public String getEmailClient() {
@@ -36,11 +37,27 @@ public class ComandaVisualitzacio {
         this.dataCreacio = dataCreacio;
     }
 
-    public Map<String, Integer> getLiniesComanda() {
+    public List<LiniaComandaVisualitzacio> getLiniesComanda() {
         return liniesComanda;
     }
 
-    public void setLiniesComanda(Map<String, Integer> liniesComanda) {
+    public void setLiniesComanda(List<LiniaComandaVisualitzacio> liniesComanda) {
         this.liniesComanda = liniesComanda;
+    }
+
+    public String getIdComanda() {
+        return idComanda;
+    }
+
+    public void setIdComanda(String idComanda) {
+        this.idComanda = idComanda;
+    }
+
+    public boolean isCancellat() {
+        return cancellat;
+    }
+
+    public void setCancellat(boolean cancellat) {
+        this.cancellat = cancellat;
     }
 }

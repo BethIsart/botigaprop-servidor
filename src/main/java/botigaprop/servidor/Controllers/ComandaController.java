@@ -63,9 +63,18 @@ public class ComandaController {
         log.trace("Petició de llistar comandes del codi " + codiAcces);
 
         String idUsuari = controlAcces.ValidarCodiAcces(codiAcces);
-        ValidarRolUsuari(idUsuari, Rol.PROVEIDOR);
         Usuari usuari = usuariRepository.findByIdUsuari(idUsuari);
-        List<Comanda> comandes = comandaRepository.findComandaByProveidorAndCancellatIsFalse(usuari);
+        List<Comanda> comandes = new ArrayList<>();
+
+        if (usuari.getRol() == Rol.PROVEIDOR)
+        {
+            comandes = comandaRepository.findComandaByProveidor(usuari);
+        }
+        if (usuari.getRol() == Rol.CLIENT)
+        {
+            comandes = comandaRepository.findComandaByClient(usuari);
+        }
+
         List<ComandaVisualitzacio> comandesAMostrar = mapper.ComandesAMostrar(comandes);
 
         log.trace("Retornada llista de comandes");
@@ -151,8 +160,6 @@ public class ComandaController {
             {
                 throw new BadRequestException("No existeix cap producte amb l'identificador " +linia.getIdProducte());
             }
-
-
 
             if (proveidor.getIdUsuari() == null)
             {
