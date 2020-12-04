@@ -1,9 +1,9 @@
 package botigaprop.servidor;
 
-import botigaprop.servidor.Models.Categoria;
-import botigaprop.servidor.Models.Producte;
-import botigaprop.servidor.Models.Rol;
-import botigaprop.servidor.Models.Usuari;
+import botigaprop.servidor.Models.Domain.Categoria;
+import botigaprop.servidor.Models.Domain.Producte;
+import botigaprop.servidor.Models.Domain.Rol;
+import botigaprop.servidor.Models.Domain.Usuari;
 import botigaprop.servidor.Persistence.ProducteRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;

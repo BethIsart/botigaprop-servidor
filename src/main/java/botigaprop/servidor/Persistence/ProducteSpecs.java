@@ -1,8 +1,8 @@
 package botigaprop.servidor.Persistence;
 
-import botigaprop.servidor.Models.Categoria;
-import botigaprop.servidor.Models.Producte;
-import botigaprop.servidor.Models.Usuari;
+import botigaprop.servidor.Models.Domain.Categoria;
+import botigaprop.servidor.Models.Domain.Producte;
+import botigaprop.servidor.Models.Domain.Usuari;
 import org.springframework.data.jpa.domain.Specification;
 
 /**

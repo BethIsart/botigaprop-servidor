@@ -1,6 +1,6 @@
 package botigaprop.servidor.Persistence;
 
-import botigaprop.servidor.Models.Usuari;
+import botigaprop.servidor.Models.Domain.Usuari;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

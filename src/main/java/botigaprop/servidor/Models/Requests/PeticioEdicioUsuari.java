@@ -1,4 +1,4 @@
-package botigaprop.servidor.Models;
+package botigaprop.servidor.Models.Requests;
 
 public class PeticioEdicioUsuari {
 

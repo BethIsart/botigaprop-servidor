@@ -1,7 +1,13 @@
 package botigaprop.servidor;
 
 import botigaprop.servidor.Controllers.ProducteController;
-import botigaprop.servidor.Models.*;
+import botigaprop.servidor.Models.Domain.Categoria;
+import botigaprop.servidor.Models.Domain.Producte;
+import botigaprop.servidor.Models.Domain.Rol;
+import botigaprop.servidor.Models.Domain.Usuari;
+import botigaprop.servidor.Models.Requests.PeticioAltaProducte;
+import botigaprop.servidor.Models.Requests.PeticioFiltrarProductes;
+import botigaprop.servidor.Models.Requests.ProducteVisualitzacio;
 import botigaprop.servidor.Persistence.ProducteRepository;
 import botigaprop.servidor.Persistence.UsuariRepository;
 import botigaprop.servidor.Services.ControlAcces;

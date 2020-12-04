@@ -1,7 +1,7 @@
 package botigaprop.servidor.Services;
 
 import botigaprop.servidor.Exceptions.BadRequestException;
-import botigaprop.servidor.Models.Usuari;
+import botigaprop.servidor.Models.Domain.Usuari;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 

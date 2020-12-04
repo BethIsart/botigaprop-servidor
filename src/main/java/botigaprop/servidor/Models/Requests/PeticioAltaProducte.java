@@ -1,4 +1,6 @@
-package botigaprop.servidor.Models;
+package botigaprop.servidor.Models.Requests;
+
+import botigaprop.servidor.Models.Domain.Producte;
 
 /**
  * @author Elisabet Isart

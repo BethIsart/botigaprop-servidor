@@ -1,6 +1,8 @@
-package botigaprop.servidor.Models;
+package botigaprop.servidor.Models.Domain;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -17,21 +19,19 @@ public class Comanda {
     private boolean cancellat;
     private Date dataCancellacio;
 
+    @NotNull
     @ManyToOne
-    @JoinColumn(name = "idUsuari", referencedColumnName = "idUsuari")
+    @JoinColumn(name = "idClient", referencedColumnName = "idUsuari")
     private Usuari client;
 
+    @NotNull
     @ManyToOne
-    @JoinColumn(name = "idUsuari", referencedColumnName = "idUsuari")
+    @JoinColumn(name = "idProveidor", referencedColumnName = "idUsuari")
     private Usuari proveidor;
 
-    @JoinTable(
-            name = "linies_comanda",
-            joinColumns = @JoinColumn(name = "idComanda", nullable = false),
-            inverseJoinColumns = @JoinColumn(name="idProducte", nullable = false)
-    )
-    @ManyToMany()
-    private List<Producte> productes;
+    @NotNull
+    @OneToMany(mappedBy = "comanda", cascade=CascadeType.ALL, orphanRemoval = true)
+    private List<LiniaComanda> linies;
 
     public String getIdComanda() {
         return idComanda;
@@ -57,14 +57,6 @@ public class Comanda {
         this.cancellat = cancellat;
     }
 
-    public List<Producte> getProductes() {
-        return productes;
-    }
-
-    public void setProductes(List<Producte> productes) {
-        this.productes = productes;
-    }
-
     public Usuari getClient() {
         return client;
     }
@@ -87,6 +79,23 @@ public class Comanda {
 
     public void setDataCancellacio(Date dataCancellacio) {
         this.dataCancellacio = dataCancellacio;
+    }
+
+    public List<LiniaComanda> getLinies() {
+        return linies;
+    }
+
+    public void setLinies(List<LiniaComanda> linies) {
+        if (this.linies == null)
+        {
+            this.linies = new ArrayList<>();
+        }
+
+        for (LiniaComanda linia:linies)
+        {
+            linia.setComanda(this);
+            this.linies.add(linia);
+        }
     }
 }
 

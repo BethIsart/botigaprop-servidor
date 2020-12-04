@@ -1,4 +1,4 @@
-package botigaprop.servidor.Models;
+package botigaprop.servidor.Models.Domain;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -14,6 +14,7 @@ public class Producte {
     private String idProducte;
     @ManyToOne
     @JoinColumn(name = "idUsuari", referencedColumnName = "idUsuari")
+    @NotNull
     private Usuari idUsuari;
     @NotNull
     private String nom;

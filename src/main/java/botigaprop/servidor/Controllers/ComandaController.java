@@ -3,11 +3,15 @@ package botigaprop.servidor.Controllers;
 import botigaprop.servidor.Exceptions.BadRequestException;
 import botigaprop.servidor.Exceptions.ComandaNotFoundException;
 import botigaprop.servidor.Exceptions.UsuariNotAllowedException;
-import botigaprop.servidor.Models.*;
+import botigaprop.servidor.Models.Domain.*;
+import botigaprop.servidor.Models.Requests.ComandaVisualitzacio;
+import botigaprop.servidor.Models.Requests.PeticioAltaComanda;
+import botigaprop.servidor.Models.Requests.PeticioLiniaComanda;
 import botigaprop.servidor.Persistence.ComandaRepository;
 import botigaprop.servidor.Persistence.ProducteRepository;
 import botigaprop.servidor.Persistence.UsuariRepository;
 import botigaprop.servidor.Services.ControlAcces;
+import botigaprop.servidor.Services.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
@@ -27,12 +31,14 @@ public class ComandaController {
     private final ProducteRepository producteRepository;
     private final ComandaRepository comandaRepository;
     private final ControlAcces controlAcces;
+    private final Mapper mapper;
 
-    public ComandaController(UsuariRepository usuariRepository, ProducteRepository producteRepository, ComandaRepository comandaRepository, ControlAcces controlAcces) {
+    public ComandaController(UsuariRepository usuariRepository, ProducteRepository producteRepository, ComandaRepository comandaRepository, ControlAcces controlAcces, Mapper mapper) {
         this.usuariRepository = usuariRepository;
         this.producteRepository = producteRepository;
         this.comandaRepository = comandaRepository;
         this.controlAcces = controlAcces;
+        this.mapper = mapper;
     }
 
     @PostMapping("/altacomanda")
@@ -42,8 +48,8 @@ public class ComandaController {
 
         String idUsuari = controlAcces.ValidarCodiAcces(altaComanda.getCodiAcces());
         ValidarRolUsuari(idUsuari, Rol.CLIENT);
-        List<Producte> productes = ValidarProductesDeLaNovaComanda(altaComanda.getIdProductes());
-        Comanda comanda = CrearNovaComanda(productes, idUsuari);
+        List<LiniaComanda> liniesComanda = ValidarLiniesDeLaNovaComanda(altaComanda.getLinies());
+        Comanda comanda = CrearNovaComanda(liniesComanda, idUsuari);
 
         comandaRepository.save(comanda);
 
@@ -52,7 +58,7 @@ public class ComandaController {
     }
 
     @GetMapping("/comandes/{codiAcces}")
-    public List<Comanda> llistarComandes(@PathVariable String codiAcces) {
+    public List<ComandaVisualitzacio> llistarComandes(@PathVariable String codiAcces) {
 
         log.trace("Petició de llistar comandes del codi " + codiAcces);
 
@@ -60,9 +66,10 @@ public class ComandaController {
         ValidarRolUsuari(idUsuari, Rol.PROVEIDOR);
         Usuari usuari = usuariRepository.findByIdUsuari(idUsuari);
         List<Comanda> comandes = comandaRepository.findComandaByProveidorAndCancellatIsFalse(usuari);
+        List<ComandaVisualitzacio> comandesAMostrar = mapper.ComandesAMostrar(comandes);
 
         log.trace("Retornada llista de comandes");
-        return comandes;
+        return comandesAMostrar;
     }
 
     @DeleteMapping("/cancellarcomanda/{codiAcces}/{idComanda}")
@@ -102,14 +109,14 @@ public class ComandaController {
         return comanda;
     }
 
-    private Comanda CrearNovaComanda(List<Producte> productes, String idUsuari) {
+    private Comanda CrearNovaComanda(List<LiniaComanda> liniesComanda, String idUsuari) {
         Usuari usuari = usuariRepository.findByIdUsuari(idUsuari);
         Comanda comanda = new Comanda();
         comanda.setIdComanda(UUID.randomUUID().toString());
         comanda.setClient(usuari);
-        comanda.setProveidor(productes.get(0).getUsuari());
-        comanda.setProductes(productes);
+        comanda.setProveidor(liniesComanda.get(0).getProducte().getUsuari());
         comanda.setDataCreacio(new Date());
+        comanda.setLinies(liniesComanda);
 
         return comanda;
     }
@@ -122,40 +129,52 @@ public class ComandaController {
         }
     }
 
-    private List<Producte> ValidarProductesDeLaNovaComanda(List<String> idProductes) {
+    private List<LiniaComanda> ValidarLiniesDeLaNovaComanda(List<PeticioLiniaComanda> liniesComanda) {
 
-        if (idProductes == null || idProductes.isEmpty())
+        if (liniesComanda == null || liniesComanda.isEmpty())
         {
             throw new BadRequestException("No es pot crear una comanda sense productes");
         }
 
-        List<Producte> productes = new ArrayList<>();
-        for (String idProducte:idProductes)
+        List<LiniaComanda> liniesDeLaComanda = new ArrayList<>();
+        Usuari proveidor = new Usuari();
+
+        for (PeticioLiniaComanda linia:liniesComanda)
         {
-            Usuari proveidor = new Usuari();
-            Producte producte = producteRepository.findByIdProducte(idProducte);
-            if (producte == null)
+            if (linia.getUnitats() <= 0)
             {
-                throw new BadRequestException("No existeix cap producte amb l'identificador " +idProducte);
+                throw new BadRequestException("El camp unitats és obligatori i no pot ser igual o inferior a 0");
             }
 
-            productes.add(producte);
-            ValidarProveidorProducte(proveidor, producte);
+            Producte producte = producteRepository.findByIdProducte(linia.getIdProducte());
+            if (producte == null)
+            {
+                throw new BadRequestException("No existeix cap producte amb l'identificador " +linia.getIdProducte());
+            }
+
+
+
+            if (proveidor.getIdUsuari() == null)
+            {
+                proveidor = producte.getUsuari();
+            }
+
+            if (proveidor != producte.getUsuari())
+            {
+                throw new BadRequestException("No es pot crear una comanda amb productes de diferents proveïdors");
+            }
+
+            liniesDeLaComanda.add(CrearNovaLiniaDeComanda(linia, producte));
         }
 
-        return productes;
+        return liniesDeLaComanda;
     }
 
-    private void ValidarProveidorProducte(Usuari proveidor, Producte producte) {
-
-        if (proveidor.getIdUsuari() == null)
-        {
-            proveidor = producte.getUsuari();
-        }
-
-        if (proveidor != producte.getUsuari())
-        {
-            throw new BadRequestException("No es pot crear una comanda amb productes de diferents proveïdors");
-        }
+    private LiniaComanda CrearNovaLiniaDeComanda(PeticioLiniaComanda linia, Producte producte) {
+        LiniaComanda novaLinia = new LiniaComanda();
+        novaLinia.setIdLiniaComanda(UUID.randomUUID().toString());
+        novaLinia.setUnitats(linia.getUnitats());
+        novaLinia.setProducte(producte);
+        return novaLinia;
     }
 }

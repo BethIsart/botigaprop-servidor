@@ -1,7 +1,7 @@
 package botigaprop.servidor;
 
-import botigaprop.servidor.Models.Rol;
-import botigaprop.servidor.Models.Usuari;
+import botigaprop.servidor.Models.Domain.Rol;
+import botigaprop.servidor.Models.Domain.Usuari;
 import botigaprop.servidor.Persistence.UsuariRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;

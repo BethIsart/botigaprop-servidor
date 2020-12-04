@@ -1,19 +1,14 @@
 package botigaprop.servidor;
 
-import botigaprop.servidor.Models.*;
+import botigaprop.servidor.Models.Domain.Categoria;
+import botigaprop.servidor.Models.Domain.Producte;
+import botigaprop.servidor.Models.Domain.Rol;
+import botigaprop.servidor.Models.Domain.Usuari;
+import botigaprop.servidor.Models.Requests.ProducteVisualitzacio;
 import botigaprop.servidor.Services.Mapper;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -1,4 +1,4 @@
-package botigaprop.servidor.Models;
+package botigaprop.servidor.Models.Domain;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
