@@ -1,0 +1,85 @@
+{
+	"info": {
+		"_postman_id": "ef3915f8-0fc1-438c-8a97-513062aae387",
+		"name": "Comandes",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Alta comanda",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"codiAcces\":\"c79f010a-160c-46be-919a-11d7d144d7b4\",\r\n    \"linies\":\r\n    [\r\n        {\r\n            \"idProducte\":\"idProducte\",\r\n            \"unitats\":2\r\n        },\r\n        {\r\n            \"idProducte\":\"idProducte2\",\r\n            \"unitats\":5\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/altacomanda",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"altacomanda"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Llista comandes",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/comandes/codiAcces",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"comandes",
+						"codiAcces"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cancel·lar comanda",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/cancellarcomanda/codiAcces/idComanda",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"cancellarcomanda",
+						"codiAcces",
+						"idComanda"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

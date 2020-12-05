@@ -1,0 +1,140 @@
+{
+	"info": {
+		"_postman_id": "846ba5e2-e6da-41e3-905b-d8322c912532",
+		"name": "Productes",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Alta producte",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"codiAcces\":\"c79f010a-160c-46be-919a-11d7d144d7b4\",\r\n    \"producte\":\r\n    {\r\n        \"nom\":\"unProducte\",\r\n        \"tipus\":\"Fleca\",\r\n        \"preu\":\"1\",\r\n        \"unitats\":\"caixa\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/altaproducte",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"altaproducte"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Llista productes",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/productes/codiAcces",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"productes",
+						"codiAcces"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Baixa producte",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/baixaproducte/codiAcces/idProducte",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"baixaproducte",
+						"codiAcces",
+						"idProducte"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Editar producte",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "    {\r\n        \"nom\":\"unProducteEditat\",\r\n        \"tipus\":\"Fleca\",\r\n        \"preu\":\"1\",\r\n        \"unitats\":\"caixa\"\r\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/editarproducte/codiAcces",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"editarproducte",
+						"codiAcces"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Filtrar producte",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n     \"codiAcces\":\"1cc116ed-8f71-47b9-9639-b3f57ebd677a\",\r\n     \"tipus\":null,\r\n     \"preuMin\":\"\",\r\n     \"preuMax\":\"\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/filtrarproductes",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"filtrarproductes"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
