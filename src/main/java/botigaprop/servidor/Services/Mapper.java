@@ -1,12 +1,10 @@
 package botigaprop.servidor.Services;
 
-import botigaprop.servidor.Models.Domain.Comanda;
-import botigaprop.servidor.Models.Domain.Enviament;
-import botigaprop.servidor.Models.Domain.LiniaComanda;
-import botigaprop.servidor.Models.Domain.Producte;
+import botigaprop.servidor.Models.Domain.*;
 import botigaprop.servidor.Models.Requests.ComandaVisualitzacio;
 import botigaprop.servidor.Models.Requests.LiniaComandaVisualitzacio;
 import botigaprop.servidor.Models.Requests.ProducteVisualitzacio;
+import botigaprop.servidor.Models.Requests.ValoracioProducteVisualitzacio;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
@@ -64,5 +62,19 @@ public class Mapper {
         }
 
         return comandaVisualitzacio;
+    }
+
+    public List<ValoracioProducteVisualitzacio> ValoracionsAMostrar(List<ValoracioProducte> valoracions)
+    {
+        List<ValoracioProducteVisualitzacio> valoracionsAMostrar = new ArrayList<>();
+        for (ValoracioProducte valoracion: valoracions) {
+            valoracionsAMostrar.add(ValoracioAMostrar(valoracion));
+        }
+        return valoracionsAMostrar;
+    }
+
+    public ValoracioProducteVisualitzacio ValoracioAMostrar(ValoracioProducte valoracio)
+    {
+        return new ValoracioProducteVisualitzacio(valoracio.getDataCreacio(), valoracio.getPuntuacio(), valoracio.getComentari());
     }
 }
