@@ -129,14 +129,12 @@ public class UsuariController {
     @GetMapping("/usuari/{codiAcces}")
     public Usuari Usuari(@PathVariable String codiAcces) {
 
-        //TODO REVISAR I AFAGIR
         log.trace("Petició de mostrar les dades d'usuari del codi " + codiAcces);
 
         String idUsuari = controlAcces.ValidarCodiAcces(codiAcces);
-
         Usuari usuari = repository.findByIdUsuari(idUsuari);
 
-        log.trace("Retornat usuari");
+        log.trace("Retornades dades d'usuari del usuari " + usuari.getIdUsuari());
         return usuari;
     }
 

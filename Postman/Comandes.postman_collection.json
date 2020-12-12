@@ -12,7 +12,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"codiAcces\":\"c79f010a-160c-46be-919a-11d7d144d7b4\",\r\n    \"linies\":\r\n    [\r\n        {\r\n            \"idProducte\":\"idProducte\",\r\n            \"unitats\":2\r\n        },\r\n        {\r\n            \"idProducte\":\"idProducte2\",\r\n            \"unitats\":5\r\n        }\r\n    ]\r\n}",
+					"raw": "{\r\n    \"codiAcces\":\"c79f010a-160c-46be-919a-11d7d144d7b4\",\r\n    \"distribucio\":false,\r\n    \"direccioEnviament\":\"unaDireccio\",\r\n    \"horariEnviament\":\"unHorari\",\r\n    \"linies\":\r\n    [\r\n        {\r\n            \"idProducte\":\"idProducte\",\r\n            \"unitats\":2\r\n        },\r\n        {\r\n            \"idProducte\":\"idProducte2\",\r\n            \"unitats\":5\r\n        }\r\n    ]\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"

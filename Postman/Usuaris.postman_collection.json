@@ -58,7 +58,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"email\":\"anEmail@email.com\",\r\n    \"contrasenya\":\"1234\"\r\n}",
+					"raw": "{\r\n    \"email\":\"proveidor@email.com\",\r\n    \"contrasenya\":\"1234\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -182,6 +182,25 @@
 					"port": "8080",
 					"path": [
 						"editarusuari",
+						"codiAcces"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Veure usuari",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/usuari/codiAcces",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"usuari",
 						"codiAcces"
 					]
 				}
