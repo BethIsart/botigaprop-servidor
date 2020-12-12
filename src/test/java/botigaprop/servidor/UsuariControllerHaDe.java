@@ -577,6 +577,20 @@ public class UsuariControllerHaDe {
                 .andExpect(result -> assertEquals("Aquesta funcionalitat requereix el rol de proveïdor", result.getResolvedException().getMessage()));
     }
 
+    @Test
+    public void retornarLesDadesDUnUsuari()
+            throws Exception {
+
+        donatUnUsuariAdministrador();
+        donatUnCodiDAccesValidPelUsuariAdministrador();
+
+        mvc.perform(get("/usuari/" + codiAcces)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("\"idUsuari\":\"idUsuariAdministrador\"")));
+
+    }
+
     private DadesAcces donatLesDadesDAccesDUnUsuari(String emailPeticio, String contrasenyaPeticio) {
         DadesAcces dades = new DadesAcces();
         dades.setEmail(emailPeticio);
