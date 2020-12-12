@@ -12,6 +12,8 @@ public class ComandaVisualitzacio {
     private Date dataCreacio;
     private boolean cancellat;
     private List<LiniaComandaVisualitzacio> liniesComanda;
+    private String direccioEnviamnet;
+    private String horariEnviament;
 
     public ComandaVisualitzacio(String idComanda, String emailClient, Date dataCreacio, boolean cancellat, List<LiniaComandaVisualitzacio> liniesComanda) {
         this.idComanda = idComanda;
@@ -59,5 +61,21 @@ public class ComandaVisualitzacio {
 
     public void setCancellat(boolean cancellat) {
         this.cancellat = cancellat;
+    }
+
+    public String getDireccioEnviamnet() {
+        return direccioEnviamnet;
+    }
+
+    public void setDireccioEnviamnet(String direccioEnviamnet) {
+        this.direccioEnviamnet = direccioEnviamnet;
+    }
+
+    public String getHorariEnviament() {
+        return horariEnviament;
+    }
+
+    public void setHorariEnviament(String horariEnviament) {
+        this.horariEnviament = horariEnviament;
     }
 }

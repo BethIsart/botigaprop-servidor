@@ -8,6 +8,7 @@ import botigaprop.servidor.Models.Requests.ComandaVisualitzacio;
 import botigaprop.servidor.Models.Requests.PeticioAltaComanda;
 import botigaprop.servidor.Models.Requests.PeticioLiniaComanda;
 import botigaprop.servidor.Persistence.ComandaRepository;
+import botigaprop.servidor.Persistence.EnviamentRepository;
 import botigaprop.servidor.Persistence.ProducteRepository;
 import botigaprop.servidor.Persistence.UsuariRepository;
 import botigaprop.servidor.Services.ControlAcces;
@@ -30,13 +31,15 @@ public class ComandaController {
     private final UsuariRepository usuariRepository;
     private final ProducteRepository producteRepository;
     private final ComandaRepository comandaRepository;
+    private final EnviamentRepository enviamentRepository;
     private final ControlAcces controlAcces;
     private final Mapper mapper;
 
-    public ComandaController(UsuariRepository usuariRepository, ProducteRepository producteRepository, ComandaRepository comandaRepository, ControlAcces controlAcces, Mapper mapper) {
+    public ComandaController(UsuariRepository usuariRepository, ProducteRepository producteRepository, ComandaRepository comandaRepository, EnviamentRepository enviamentRepository, ControlAcces controlAcces, Mapper mapper) {
         this.usuariRepository = usuariRepository;
         this.producteRepository = producteRepository;
         this.comandaRepository = comandaRepository;
+        this.enviamentRepository = enviamentRepository;
         this.controlAcces = controlAcces;
         this.mapper = mapper;
     }
@@ -49,7 +52,13 @@ public class ComandaController {
         String idUsuari = controlAcces.ValidarCodiAcces(altaComanda.getCodiAcces());
         ValidarRolUsuari(idUsuari, Rol.CLIENT);
         List<LiniaComanda> liniesComanda = ValidarLiniesDeLaNovaComanda(altaComanda.getLinies());
+        ValidarDistribucio(altaComanda);
         Comanda comanda = CrearNovaComanda(liniesComanda, idUsuari);
+
+        if (altaComanda.getDistribucio() == true)
+        {
+            AfegirEnviament(altaComanda, comanda);
+        }
 
         comandaRepository.save(comanda);
 
@@ -130,6 +139,17 @@ public class ComandaController {
         return comanda;
     }
 
+    private void ValidarDistribucio(PeticioAltaComanda altaComanda) {
+
+        if (altaComanda.getDistribucio() == true)
+        {
+            if (altaComanda.getDireccioEnviament() == null || altaComanda.getDireccioEnviament().isEmpty())
+            {
+                throw new BadRequestException("El camp direcció és obligatori quan es demana la distribució");
+            }
+        }
+    }
+
     private void ValidarRolUsuari(String idUsuari, Rol rol) {
         Usuari usuari = usuariRepository.findByIdUsuari(idUsuari);
         if (usuari.getRol() != rol)
@@ -183,5 +203,20 @@ public class ComandaController {
         novaLinia.setUnitats(linia.getUnitats());
         novaLinia.setProducte(producte);
         return novaLinia;
+    }
+
+    private Enviament CrearEnviament(PeticioAltaComanda altaComanda) {
+
+        Enviament enviament = new Enviament();
+        enviament.setIdEnviament(UUID.randomUUID().toString());
+        enviament.setDireccio(altaComanda.getDireccioEnviament());
+        enviament.setHorari(altaComanda.getHorariEnviament());
+        return enviament;
+    }
+
+    private void AfegirEnviament(PeticioAltaComanda altaComanda, Comanda comanda) {
+        Enviament enviament = CrearEnviament(altaComanda);
+        enviamentRepository.save(enviament);
+        comanda.setEnviament(enviament);
     }
 }

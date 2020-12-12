@@ -1,6 +1,7 @@
 package botigaprop.servidor.Services;
 
 import botigaprop.servidor.Models.Domain.Comanda;
+import botigaprop.servidor.Models.Domain.Enviament;
 import botigaprop.servidor.Models.Domain.LiniaComanda;
 import botigaprop.servidor.Models.Domain.Producte;
 import botigaprop.servidor.Models.Requests.ComandaVisualitzacio;
@@ -53,6 +54,15 @@ public class Mapper {
             liniesComanda.add(new LiniaComandaVisualitzacio(linia.getProducte().getNom(), linia.getUnitats()));
         }
 
-        return new ComandaVisualitzacio(comanda.getIdComanda(), comanda.getClient().getEmail(), comanda.getDataCreacio(), comanda.isCancellat(), liniesComanda);
+        ComandaVisualitzacio comandaVisualitzacio = new ComandaVisualitzacio(comanda.getIdComanda(), comanda.getClient().getEmail(), comanda.getDataCreacio(), comanda.isCancellat(), liniesComanda);
+
+        if (comanda.getEnviament() != null)
+        {
+            Enviament enviament = comanda.getEnviament();
+            comandaVisualitzacio.setDireccioEnviamnet(enviament.getDireccio());
+            comandaVisualitzacio.setHorariEnviament(enviament.getHorari());
+        }
+
+        return comandaVisualitzacio;
     }
 }

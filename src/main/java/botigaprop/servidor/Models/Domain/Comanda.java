@@ -33,6 +33,10 @@ public class Comanda {
     @OneToMany(mappedBy = "comanda", cascade=CascadeType.ALL, orphanRemoval = true)
     private List<LiniaComanda> linies;
 
+    @ManyToOne
+    @JoinColumn(name = "idEnviament", referencedColumnName = "idEnviament")
+    private Enviament enviament;
+
     public String getIdComanda() {
         return idComanda;
     }
@@ -96,6 +100,14 @@ public class Comanda {
             linia.setComanda(this);
             this.linies.add(linia);
         }
+    }
+
+    public Enviament getEnviament() {
+        return enviament;
+    }
+
+    public void setEnviament(Enviament enviament) {
+        this.enviament = enviament;
     }
 }
 
