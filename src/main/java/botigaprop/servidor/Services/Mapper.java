@@ -57,7 +57,7 @@ public class Mapper {
         if (comanda.getEnviament() != null)
         {
             Enviament enviament = comanda.getEnviament();
-            comandaVisualitzacio.setDireccioEnviamnet(enviament.getDireccio());
+            comandaVisualitzacio.setDireccioEnviament(enviament.getDireccio());
             comandaVisualitzacio.setHorariEnviament(enviament.getHorari());
         }
 

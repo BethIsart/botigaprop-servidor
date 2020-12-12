@@ -12,7 +12,7 @@ public class ComandaVisualitzacio {
     private Date dataCreacio;
     private boolean cancellat;
     private List<LiniaComandaVisualitzacio> liniesComanda;
-    private String direccioEnviamnet;
+    private String direccioEnviament;
     private String horariEnviament;
 
     public ComandaVisualitzacio(String idComanda, String emailClient, Date dataCreacio, boolean cancellat, List<LiniaComandaVisualitzacio> liniesComanda) {
@@ -63,12 +63,12 @@ public class ComandaVisualitzacio {
         this.cancellat = cancellat;
     }
 
-    public String getDireccioEnviamnet() {
-        return direccioEnviamnet;
+    public String getDireccioEnviament() {
+        return direccioEnviament;
     }
 
-    public void setDireccioEnviamnet(String direccioEnviamnet) {
-        this.direccioEnviamnet = direccioEnviamnet;
+    public void setDireccioEnviament(String direccioEnviament) {
+        this.direccioEnviament = direccioEnviament;
     }
 
     public String getHorariEnviament() {
