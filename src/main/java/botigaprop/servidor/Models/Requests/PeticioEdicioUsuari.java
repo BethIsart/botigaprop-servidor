@@ -1,5 +1,8 @@
 package botigaprop.servidor.Models.Requests;
 
+/**
+ * @author Elisabet Isart
+ */
 public class PeticioEdicioUsuari {
 
     private String nom;

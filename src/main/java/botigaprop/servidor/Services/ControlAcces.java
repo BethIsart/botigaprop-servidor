@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * @author Elisabet Isart
+ */
 @Service
 @Primary
 public class ControlAcces {
