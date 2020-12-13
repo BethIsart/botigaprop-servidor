@@ -29,6 +29,7 @@ public class ProducteRepositoryIntegrationTest {
     private final Usuari usuari1 = new Usuari();
     private final Usuari usuari2 = new Usuari();
     private final String idProducte1 = "idProducte1";
+
     @Autowired
     private TestEntityManager entityManager;
     @Autowired

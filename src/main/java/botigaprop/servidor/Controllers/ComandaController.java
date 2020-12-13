@@ -83,6 +83,10 @@ public class ComandaController {
         {
             comandes = comandaRepository.findComandaByClient(usuari);
         }
+        if (usuari.getRol() == Rol.ADMINISTRADOR)
+        {
+            comandes = comandaRepository.findAll();
+        }
 
         List<ComandaVisualitzacio> comandesAMostrar = mapper.ComandesAMostrar(comandes);
 

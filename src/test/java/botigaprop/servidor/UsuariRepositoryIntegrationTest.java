@@ -18,13 +18,14 @@ import static org.assertj.core.api.Assertions.*;
 @DataJpaTest
 public class UsuariRepositoryIntegrationTest {
 
+    private String email = "email@test.com";
+    private final String idUsuari = "unIdDeUsuari";
+    private final String unaContrasenya = "unaContrasenya";
+
     @Autowired
     private TestEntityManager entityManager;
     @Autowired
     private UsuariRepository usuariRepository;
-    private String email = "email@test.com";
-    private final String idUsuari = "unIdDeUsuari";
-    private final String unaContrasenya = "unaContrasenya";
 
     @Test
     public void quanBuscaPerIdUsuariAleshoresRetornaUnUsuari()
