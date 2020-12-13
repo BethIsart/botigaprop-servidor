@@ -54,7 +54,7 @@ public class ComandaRepositoryIntegrationTest {
         donatUnProducte();
         donadesDuesComandesDeLesQualsUnaDelClient();
 
-        List<Comanda> comandesTrobades = comandaRepository.findComandaByClient(usuari);
+        List<Comanda> comandesTrobades = comandaRepository.findComandaByClient(usuari2);
 
         assertThat(comandesTrobades.size()).isEqualTo(1);
         assertThat(comandesTrobades.get(0).getProveidor()).isEqualTo(usuari);
