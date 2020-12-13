@@ -95,7 +95,7 @@ public class ValoracioController {
 
         if (valoracio.getIdProducte() == null || valoracio.getIdProducte().isEmpty())
         {
-            throw new BadRequestException("El camp producte és obligatorio");
+            throw new BadRequestException("El camp producte és obligatori");
         }
 
         if (valoracio.getPuntuacio() == null || valoracio.getPuntuacio() > 5 || valoracio.getPuntuacio() < 0)

@@ -3,7 +3,6 @@ package botigaprop.servidor;
 import botigaprop.servidor.Controllers.ComandaController;
 import botigaprop.servidor.Models.Domain.*;
 import botigaprop.servidor.Models.Requests.PeticioAltaComanda;
-import botigaprop.servidor.Models.Requests.PeticioAltaProducte;
 import botigaprop.servidor.Models.Requests.PeticioLiniaComanda;
 import botigaprop.servidor.Persistence.ComandaRepository;
 import botigaprop.servidor.Persistence.EnviamentRepository;
