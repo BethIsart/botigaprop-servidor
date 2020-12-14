@@ -90,7 +90,7 @@ public class ProducteController {
         Map<String, Object> response = new HashMap<>();
         response.put("productes", productesAMostrar);
         response.put("paginaActual", pageProductes.getNumber());
-        response.put("totalUsuaris", pageProductes.getTotalElements());
+        response.put("totalProductes", pageProductes.getTotalElements());
         response.put("totalPagines", pageProductes.getTotalPages());
 
         log.trace("Retornada llista de productes");
