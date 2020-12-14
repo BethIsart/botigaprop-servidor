@@ -88,7 +88,7 @@ public class ProducteController {
         List<ProducteVisualitzacio> productesAMostrar = mapper.ProductesAMostrar(productes);
 
         Map<String, Object> response = new HashMap<>();
-        response.put("productes", productes);
+        response.put("productes", productesAMostrar);
         response.put("paginaActual", pageProductes.getNumber());
         response.put("totalUsuaris", pageProductes.getTotalElements());
         response.put("totalPagines", pageProductes.getTotalPages());
