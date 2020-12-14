@@ -308,7 +308,6 @@ public class ProducteController {
         }
 
         return producteRepository.findAll(spec);
-        //TODO return producteRepository.findAll(spec, pageable);
     }
 
     private Usuari TrobarProveidor(String idProveidor) {

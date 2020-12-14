@@ -14,6 +14,10 @@ import botigaprop.servidor.Services.ControlAcces;
 import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -101,17 +105,25 @@ public class UsuariController {
     }
 
     @GetMapping("/usuaris/{codiAcces}")
-    public List<Usuari> llistarUsuaris(@PathVariable String codiAcces) {
+    public Map<String, Object> llistarUsuaris(@PathVariable String codiAcces, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size) {
 
         log.trace("Petició de llistar usuaris del codi " + codiAcces);
 
+        Pageable paging = PageRequest.of(page, size);
         String idUsuari = controlAcces.ValidarCodiAcces(codiAcces);
         ValidarUsuariAmbPermisosAdministrador(idUsuari);
 
-        List<Usuari> usuaris = repository.findAll();
+        Page<Usuari> pageUsuaris = repository.findAll(paging);
+        List<Usuari> usuaris = pageUsuaris.getContent();
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("usuaris", usuaris);
+        response.put("paginaActual", pageUsuaris.getNumber());
+        response.put("totalUsuaris", pageUsuaris.getTotalElements());
+        response.put("totalPagines", pageUsuaris.getTotalPages());
 
         log.trace("Retornada llista d'usuaris");
-        return usuaris;
+        return response;
     }
 
     @PutMapping("/editarusuari/{codiAcces}")
