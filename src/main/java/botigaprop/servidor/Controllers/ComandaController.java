@@ -2,6 +2,7 @@ package botigaprop.servidor.Controllers;
 
 import botigaprop.servidor.Exceptions.BadRequestException;
 import botigaprop.servidor.Exceptions.ComandaNotFoundException;
+import botigaprop.servidor.Exceptions.ComandesNotFoundException;
 import botigaprop.servidor.Exceptions.UsuariNotAllowedException;
 import botigaprop.servidor.Models.Domain.*;
 import botigaprop.servidor.Models.Requests.ComandaVisualitzacio;
@@ -89,7 +90,16 @@ public class ComandaController {
             pageComanda = comandaRepository.findAll(paging);
         }
 
-        List<Comanda> comandes = pageComanda.getContent();
+        List<Comanda> comandes = new ArrayList<>();
+        if (pageComanda != null)
+        {
+            pageComanda.getContent();
+        }
+        else
+        {
+            throw new ComandesNotFoundException();
+        }
+
         List<ComandaVisualitzacio> comandesAMostrar = mapper.ComandesAMostrar(comandes);
 
         Map<String, Object> response = new HashMap<>();

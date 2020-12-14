@@ -3,6 +3,7 @@ package botigaprop.servidor.Controllers;
 import botigaprop.servidor.Exceptions.BadRequestException;
 import botigaprop.servidor.Exceptions.UsuariNotAllowedException;
 import botigaprop.servidor.Exceptions.UsuariNotFoundException;
+import botigaprop.servidor.Exceptions.UsuarisNotFoundException;
 import botigaprop.servidor.Models.Domain.DadesAcces;
 import botigaprop.servidor.Models.Domain.Rol;
 import botigaprop.servidor.Models.Domain.Usuari;
@@ -17,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -113,7 +115,15 @@ public class UsuariController {
         ValidarUsuariAmbPermisosAdministrador(idUsuari);
 
         Page<Usuari> pageUsuaris = repository.findAll(paging);
-        List<Usuari> usuaris = pageUsuaris.getContent();
+        List<Usuari> usuaris;
+        if (pageUsuaris != null)
+        {
+            usuaris = pageUsuaris.getContent();
+        }
+        else
+        {
+            throw new UsuarisNotFoundException();
+        }
 
         Map<String, Object> response = new HashMap<>();
         response.put("usuaris", usuaris);

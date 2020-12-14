@@ -1,6 +1,7 @@
 package botigaprop.servidor;
 
 import botigaprop.servidor.Controllers.UsuariController;
+import botigaprop.servidor.Models.Domain.Comanda;
 import botigaprop.servidor.Models.Domain.DadesAcces;
 import botigaprop.servidor.Models.Domain.Rol;
 import botigaprop.servidor.Models.Domain.Usuari;
@@ -15,6 +16,9 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -438,6 +442,7 @@ public class UsuariControllerHaDe {
 
         donatUnUsuariAdministrador();
         donatUnCodiDAccesValidPelUsuariAdministrador();
+        donatUnUsuari();
 
         mvc.perform(get("/usuaris/" + codiAcces)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -656,4 +661,12 @@ public class UsuariControllerHaDe {
         peticio.setIdUsuari(idUsuari);
         return peticio;
     }
+
+    private void donatUnUsuari() {
+        List<Usuari> usuaris = new ArrayList<>();
+        usuaris.add(new Usuari());
+        Page<Usuari> pageUsuari = new PageImpl<Usuari>(usuaris);
+        Mockito.when(usuariRepository.findAll(PageRequest.of(0, 5))).thenReturn(pageUsuari);
+    }
+
 }

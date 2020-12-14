@@ -3,6 +3,7 @@ package botigaprop.servidor.Controllers;
 import botigaprop.servidor.Exceptions.BadRequestException;
 import botigaprop.servidor.Exceptions.ProducteNotFoundException;
 import botigaprop.servidor.Exceptions.UsuariNotAllowedException;
+import botigaprop.servidor.Exceptions.ValoracionsNotFoundException;
 import botigaprop.servidor.Models.Domain.*;
 import botigaprop.servidor.Models.Requests.PeticioAltaValoracio;
 import botigaprop.servidor.Models.Requests.ValoracioProducteVisualitzacio;
@@ -19,9 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author Elisabet Isart
@@ -65,10 +64,11 @@ public class ValoracioController {
     }
 
     @GetMapping("/valoracionsproducte/{codiAcces}/{idProducte}")
-    public List<ValoracioProducteVisualitzacio> valoracionsProducte(@PathVariable String codiAcces, @PathVariable String idProducte) {
+    public Map<String, Object> valoracionsProducte(@PathVariable String codiAcces, @PathVariable String idProducte, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size) {
 
         log.trace("Petició de visualització de les valoracions de producte del " + codiAcces);
 
+        Pageable paging = PageRequest.of(page, size);
         String idUsuari = controlAcces.ValidarCodiAcces(codiAcces);
         Producte producte = ObtenirProducte(idProducte);
         Usuari usuari = usuariRepository.findByIdUsuari(idUsuari);
@@ -78,11 +78,26 @@ public class ValoracioController {
             ValidarProducteDelProveidor(producte, usuari);
         }
 
-        List<ValoracioProducte> valoracions = valoracioRepository.findByProducte(producte);
+        Page<ValoracioProducte> pageValoracions = valoracioRepository.findByProducte(producte, paging);
+        List<ValoracioProducte> valoracions;
+        if (pageValoracions != null)
+        {
+            valoracions = pageValoracions.getContent();
+        }
+        else
+        {
+            throw new ValoracionsNotFoundException();
+        }
         List<ValoracioProducteVisualitzacio> valoracoinsAMostrar = mapper.ValoracionsAMostrar(valoracions);
 
+        Map<String, Object> response = new HashMap<>();
+        response.put("valoracions", valoracoinsAMostrar);
+        response.put("paginaActual", pageValoracions.getNumber());
+        response.put("totalValoracions", pageValoracions.getTotalElements());
+        response.put("totalPagines", pageValoracions.getTotalPages());
+
         log.trace("Retornada valoracions del producte " + idProducte);
-        return valoracoinsAMostrar;
+        return response;
     }
 
     private Usuari ValidarRolUsuari(Usuari usuari, Rol rol) {

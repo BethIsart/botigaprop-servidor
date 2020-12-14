@@ -7,6 +7,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
@@ -35,7 +37,8 @@ public class ValoracioRepositoryIntegrationTest {
         donatUnProducte(producte2, "idProducte2");
         donadesTresValoracionsDeProducteDeLesQualsDuesDelProducte();
 
-        List<ValoracioProducte> valoracionsTrobades = valoracioRepository.findByProducte(producte1);
+        Page<ValoracioProducte> pageValoracions = valoracioRepository.findByProducte(producte1, PageRequest.of(0, 5));
+        List<ValoracioProducte> valoracionsTrobades = pageValoracions.getContent();
 
         assertThat(valoracionsTrobades.size()).isEqualTo(2);
         assertThat(valoracionsTrobades.get(0).getProducte()).isEqualTo(producte1);

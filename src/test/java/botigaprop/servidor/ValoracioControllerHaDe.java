@@ -15,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -38,6 +39,7 @@ public class ValoracioControllerHaDe {
     private final String idProducte = "idProducte";
     private final String comentari = "unComentari";
     private final int puntuacio = 5;
+    private final PageRequest pageRequest = PageRequest.of(0, 5);
 
     @Autowired
     private MockMvc mvc;
@@ -160,6 +162,8 @@ public class ValoracioControllerHaDe {
         donatUnUsuari(Rol.CLIENT);
         donatUnCodiDAccesValid();
         donatUnProducteExistent(idProducte, idUsuari);
+        donadaUnaComanda();
+
         PeticioAltaValoracio peticio = donadaUnaPeticioDAltaDeValoracioDeProducte(comentari, puntuacio, idProducte);
 
         mvc.perform(post("/altavaloracioproducte")
@@ -211,12 +215,14 @@ public class ValoracioControllerHaDe {
         donatUnUsuari(Rol.CLIENT);
         donatUnCodiDAccesValid();
         donatUnProducteExistent(idProducte, idUsuari);
+        donadaUnaComanda();
+        donadaUnaValoracio();
 
         mvc.perform(get("/valoracionsproducte/" + codiAcces + "/" + idProducte)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        Mockito.verify(valoracioRepository).findByProducte(Mockito.any());
+        Mockito.verify(valoracioRepository).findByProducte(Mockito.any(), Mockito.any());
     }
 
     @Test
@@ -258,7 +264,7 @@ public class ValoracioControllerHaDe {
         List<Comanda> comandes = new ArrayList<>();
         comandes.add(comanda);
         Page<Comanda> pageComanda = new PageImpl<Comanda>(comandes);
-        Mockito.when(comandaRepository.findComandaByClient(usuari, Mockito.any())).thenReturn(pageComanda);
+        Mockito.when(comandaRepository.findComandaByClient(usuari, pageRequest)).thenReturn(pageComanda);
     }
 
     private PeticioAltaValoracio donadaUnaPeticioDAltaDeValoracioDeProducte(String comentari, Integer puntuacio, String idProducte) {
@@ -293,5 +299,23 @@ public class ValoracioControllerHaDe {
         producte.setUsuari(usuari);
         producte.setIdProducte(idProducte);
         Mockito.when(producteRepository.findByIdProducte(idProducte)).thenReturn(producte);
+    }
+
+    private void donadaUnaComanda() {
+        Comanda comanda = new Comanda();
+        List<LiniaComanda> liniesComanda = new ArrayList<>();
+        comanda.setLinies(liniesComanda);
+        List<Comanda> comandes = new ArrayList<>();
+        comandes.add(comanda);
+        Page<Comanda> pageComanda = new PageImpl<Comanda>(comandes);
+        Mockito.when(comandaRepository.findComandaByClient(Mockito.any(), Mockito.any())).thenReturn(pageComanda);
+        Mockito.when(comandaRepository.findComandaByProveidor(Mockito.any(), Mockito.any())).thenReturn(pageComanda);
+        Mockito.when(comandaRepository.findAll(pageRequest)).thenReturn(pageComanda);
+    }
+
+    private void donadaUnaValoracio() {
+        List<ValoracioProducte> valoracions = new ArrayList<>();
+        Page<ValoracioProducte> pageValoracioProducte = new PageImpl<ValoracioProducte>(valoracions);
+        Mockito.when(valoracioRepository.findByProducte(Mockito.any(), Mockito.any())).thenReturn(pageValoracioProducte);
     }
 }

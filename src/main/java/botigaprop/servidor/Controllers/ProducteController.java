@@ -2,6 +2,7 @@ package botigaprop.servidor.Controllers;
 
 import botigaprop.servidor.Exceptions.BadRequestException;
 import botigaprop.servidor.Exceptions.ProducteNotFoundException;
+import botigaprop.servidor.Exceptions.ProductesNotFoundException;
 import botigaprop.servidor.Exceptions.UsuariNotAllowedException;
 import botigaprop.servidor.Models.Domain.Producte;
 import botigaprop.servidor.Models.Domain.Rol;
@@ -84,7 +85,15 @@ public class ProducteController {
             pageProductes = producteRepository.findAll(paging);
         }
 
-        List<Producte> productes = pageProductes.getContent();
+        List<Producte> productes;
+        if (pageProductes != null)
+        {
+            productes = pageProductes.getContent();
+        }
+        else
+        {
+            throw new ProductesNotFoundException();
+        }
         List<ProducteVisualitzacio> productesAMostrar = mapper.ProductesAMostrar(productes);
 
         Map<String, Object> response = new HashMap<>();
