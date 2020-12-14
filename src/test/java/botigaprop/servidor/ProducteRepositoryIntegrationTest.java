@@ -10,6 +10,9 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.imageio.ImageIO;
@@ -41,7 +44,8 @@ public class ProducteRepositoryIntegrationTest {
         donatUnAltreUsuari("unAltreUsuari");
         donatTresProductesDelsQualsUnEliminatIUnDeDiferentProveidor();
 
-        List<Producte> productesTrobats = producteRepository.findProducteByIdUsuariAndEliminatIsFalse(usuari1);
+        Page<Producte> pageProducte = producteRepository.findProducteByIdUsuariAndEliminatIsFalse(usuari1, PageRequest.of(0, 5));
+        List<Producte> productesTrobats = pageProducte.getContent();
 
         assertThat(productesTrobats.size()).isEqualTo(1);
         assertThat(productesTrobats.get(0).getEliminat()).isFalse();
@@ -54,7 +58,8 @@ public class ProducteRepositoryIntegrationTest {
         donatUnAltreUsuari("unAltreUsuari");
         donatTresProductesDelsQualsUnEliminatIUnDeDiferentProveidor();
 
-        List<Producte> productesTrobats = producteRepository.findProducteByEliminatIsFalse();
+        Page<Producte> pageProducte = producteRepository.findProducteByEliminatIsFalse(PageRequest.of(0, 5));
+        List<Producte> productesTrobats = pageProducte.getContent();
 
         assertThat(productesTrobats.size()).isEqualTo(2);
     }

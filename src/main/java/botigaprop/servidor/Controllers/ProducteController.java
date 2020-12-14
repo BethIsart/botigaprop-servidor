@@ -16,13 +16,13 @@ import botigaprop.servidor.Services.ControlAcces;
 import botigaprop.servidor.Services.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author Elisabet Isart
@@ -60,33 +60,41 @@ public class ProducteController {
     }
 
     @GetMapping("/productes/{codiAcces}")
-    public List<ProducteVisualitzacio> llistarProductes(@PathVariable String codiAcces) {
+    public Map<String, Object> llistarProductes(@PathVariable String codiAcces, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size) {
 
         log.trace("Petició de llistar productes del codi " + codiAcces);
 
+        Pageable paging = PageRequest.of(page, size);
         String idUsuari = controlAcces.ValidarCodiAcces(codiAcces);
         Usuari usuari = usuariRepository.findByIdUsuari(idUsuari);
 
-        List<Producte> productes = new ArrayList<>();
+        Page<Producte> pageProductes = null;
         if (usuari.getRol() == Rol.PROVEIDOR)
         {
-            productes = producteRepository.findProducteByIdUsuariAndEliminatIsFalse(usuari);
+            pageProductes = producteRepository.findProducteByIdUsuariAndEliminatIsFalse(usuari, paging);
         }
 
         if (usuari.getRol() == Rol.CLIENT)
         {
-            productes = producteRepository.findProducteByEliminatIsFalse();
+            pageProductes = producteRepository.findProducteByEliminatIsFalse(paging);
         }
 
         if (usuari.getRol() == Rol.ADMINISTRADOR)
         {
-            productes = producteRepository.findAll();
+            pageProductes = producteRepository.findAll(paging);
         }
 
+        List<Producte> productes = pageProductes.getContent();
         List<ProducteVisualitzacio> productesAMostrar = mapper.ProductesAMostrar(productes);
 
+        Map<String, Object> response = new HashMap<>();
+        response.put("productes", productes);
+        response.put("paginaActual", pageProductes.getNumber());
+        response.put("totalUsuaris", pageProductes.getTotalElements());
+        response.put("totalPagines", pageProductes.getTotalPages());
+
         log.trace("Retornada llista de productes");
-        return productesAMostrar;
+        return response;
     }
 
     @DeleteMapping("/baixaproducte/{codiAcces}/{idProducte}")

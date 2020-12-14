@@ -20,6 +20,10 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -29,6 +33,8 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.core.StringContains.containsString;
@@ -230,12 +236,14 @@ public class ProducteControllerHaDe {
             throws Exception {
         Usuari usuari = donatUnUsuari(Rol.PROVEIDOR);
         donatUnCodiDAccesValid();
+        donatUnsProductes();
 
         mvc.perform(get("/productes/" + codiAcces)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        Mockito.verify(producteRepository).findProducteByIdUsuariAndEliminatIsFalse(usuari);
+        Pageable paging = PageRequest.of(0, 5);
+        Mockito.verify(producteRepository).findProducteByIdUsuariAndEliminatIsFalse(usuari, paging);
     }
 
     @Test
@@ -243,12 +251,14 @@ public class ProducteControllerHaDe {
             throws Exception {
         donatUnUsuari(Rol.CLIENT);
         donatUnCodiDAccesValid();
+        donatUnsProductes();
 
         mvc.perform(get("/productes/" + codiAcces)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        Mockito.verify(producteRepository).findProducteByEliminatIsFalse();
+        Pageable paging = PageRequest.of(0, 5);
+        Mockito.verify(producteRepository).findProducteByEliminatIsFalse(paging);
     }
 
     @Test
@@ -256,12 +266,14 @@ public class ProducteControllerHaDe {
             throws Exception {
         donatUnUsuari(Rol.ADMINISTRADOR);
         donatUnCodiDAccesValid();
+        donatUnsProductes();
 
         mvc.perform(get("/productes/" + codiAcces)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        Mockito.verify(producteRepository).findAll();
+        Pageable paging = PageRequest.of(0, 5);
+        Mockito.verify(producteRepository).findAll(paging);
     }
 
     @Test
@@ -694,5 +706,14 @@ public class ProducteControllerHaDe {
         Mockito.when(usuariRepository.findByIdUsuari(idUsuari)).thenReturn(usuari);
 
         return usuari;
+    }
+
+    private void donatUnsProductes() {
+        List<Producte> productes = new ArrayList<>();
+        productes.add(new Producte());
+        Page<Producte> pageProducte = new PageImpl<Producte>(productes);
+        Mockito.when(producteRepository.findProducteByIdUsuariAndEliminatIsFalse(Mockito.any(), Mockito.any())).thenReturn(pageProducte);
+        Mockito.when(producteRepository.findProducteByEliminatIsFalse(Mockito.any())).thenReturn(pageProducte);
+        Mockito.when(producteRepository.findAll(PageRequest.of(0, 5))).thenReturn(pageProducte);
     }
 }
