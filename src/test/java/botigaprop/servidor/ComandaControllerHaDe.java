@@ -17,6 +17,9 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -40,6 +43,7 @@ public class ComandaControllerHaDe {
     private final String idProducte = "idProducte";
     private final int unitats = 2;
     private final String idUsuariProveidor = "idUsuariProveidor";
+    private final PageRequest pageRequest = PageRequest.of(0, 5);
 
     @Autowired
     private MockMvc mvc;
@@ -256,12 +260,13 @@ public class ComandaControllerHaDe {
             throws Exception {
         Usuari usuari = donatUnUsuari(Rol.CLIENT);
         donatUnCodiDAccesValid();
+        donadesUnesComandes();
 
         mvc.perform(get("/comandes/" + codiAcces)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        Mockito.verify(comandaRepository).findComandaByClient(usuari);
+        Mockito.verify(comandaRepository).findComandaByClient(usuari, pageRequest);
     }
 
     @Test
@@ -269,12 +274,13 @@ public class ComandaControllerHaDe {
             throws Exception {
         Usuari usuari = donatUnUsuari(Rol.PROVEIDOR);
         donatUnCodiDAccesValid();
+        donadesUnesComandes();
 
         mvc.perform(get("/comandes/" + codiAcces)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        Mockito.verify(comandaRepository).findComandaByProveidor(usuari);
+        Mockito.verify(comandaRepository).findComandaByProveidor(usuari, pageRequest);
     }
 
     @Test
@@ -282,12 +288,13 @@ public class ComandaControllerHaDe {
             throws Exception {
         donatUnUsuari(Rol.ADMINISTRADOR);
         donatUnCodiDAccesValid();
+        donadesUnesComandes();
 
         mvc.perform(get("/comandes/" + codiAcces)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        Mockito.verify(comandaRepository).findAll();
+        Mockito.verify(comandaRepository).findAll(pageRequest);
     }
 
     private PeticioAltaComanda donadaUnaPeticioDAltaDeComanda(boolean distribucio, String unaDireccio, String unHorari, List<PeticioLiniaComanda> liniesComanda) {
@@ -345,5 +352,14 @@ public class ComandaControllerHaDe {
         Producte producte = new Producte();
         producte.setUsuari(usuari);
         Mockito.when(producteRepository.findByIdProducte(idProducte)).thenReturn(producte);
+    }
+
+    private void donadesUnesComandes() {
+        List<Comanda> comandes = new ArrayList<>();
+        comandes.add(new Comanda());
+        Page<Comanda> pageComanda = new PageImpl<Comanda>(comandes);
+        Mockito.when(comandaRepository.findComandaByClient(Mockito.any(), Mockito.any())).thenReturn(pageComanda);
+        Mockito.when(comandaRepository.findComandaByProveidor(Mockito.any(), Mockito.any())).thenReturn(pageComanda);
+        Mockito.when(comandaRepository.findAll(pageRequest)).thenReturn(pageComanda);
     }
 }

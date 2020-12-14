@@ -7,6 +7,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
@@ -40,7 +42,8 @@ public class ComandaRepositoryIntegrationTest {
         donatUnProducte();
         donadesDuesComandesDeLesQualsUnaDelProveidor();
 
-        List<Comanda> comandesTrobades = comandaRepository.findComandaByProveidor(usuari);
+        Page<Comanda> pageComandes = comandaRepository.findComandaByProveidor(usuari, PageRequest.of(0, 5));
+        List<Comanda> comandesTrobades = pageComandes.getContent();
 
         assertThat(comandesTrobades.size()).isEqualTo(1);
         assertThat(comandesTrobades.get(0).getProveidor()).isEqualTo(usuari);
@@ -54,7 +57,8 @@ public class ComandaRepositoryIntegrationTest {
         donatUnProducte();
         donadesDuesComandesDeLesQualsUnaDelClient();
 
-        List<Comanda> comandesTrobades = comandaRepository.findComandaByClient(usuari2);
+        Page<Comanda> pageComandes = comandaRepository.findComandaByClient(usuari2, PageRequest.of(0, 5));
+        List<Comanda> comandesTrobades = pageComandes.getContent();
 
         assertThat(comandesTrobades.size()).isEqualTo(1);
         assertThat(comandesTrobades.get(0).getProveidor()).isEqualTo(usuari);

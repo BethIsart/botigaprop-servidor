@@ -57,6 +57,7 @@ public class ProducteControllerHaDe {
     private final double quantitat = 1;
     private final boolean disponible = true;
     private final String idProducte = "idProducte";
+    private final PageRequest pageRequest = PageRequest.of(0, 5);
 
     @Autowired
     private MockMvc mvc;
@@ -242,8 +243,7 @@ public class ProducteControllerHaDe {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        Pageable paging = PageRequest.of(0, 5);
-        Mockito.verify(producteRepository).findProducteByIdUsuariAndEliminatIsFalse(usuari, paging);
+        Mockito.verify(producteRepository).findProducteByIdUsuariAndEliminatIsFalse(usuari, pageRequest);
     }
 
     @Test
@@ -257,8 +257,7 @@ public class ProducteControllerHaDe {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        Pageable paging = PageRequest.of(0, 5);
-        Mockito.verify(producteRepository).findProducteByEliminatIsFalse(paging);
+        Mockito.verify(producteRepository).findProducteByEliminatIsFalse(pageRequest);
     }
 
     @Test
@@ -272,8 +271,7 @@ public class ProducteControllerHaDe {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        Pageable paging = PageRequest.of(0, 5);
-        Mockito.verify(producteRepository).findAll(paging);
+        Mockito.verify(producteRepository).findAll(pageRequest);
     }
 
     @Test
@@ -714,6 +712,6 @@ public class ProducteControllerHaDe {
         Page<Producte> pageProducte = new PageImpl<Producte>(productes);
         Mockito.when(producteRepository.findProducteByIdUsuariAndEliminatIsFalse(Mockito.any(), Mockito.any())).thenReturn(pageProducte);
         Mockito.when(producteRepository.findProducteByEliminatIsFalse(Mockito.any())).thenReturn(pageProducte);
-        Mockito.when(producteRepository.findAll(PageRequest.of(0, 5))).thenReturn(pageProducte);
+        Mockito.when(producteRepository.findAll(pageRequest)).thenReturn(pageProducte);
     }
 }

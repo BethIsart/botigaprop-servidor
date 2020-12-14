@@ -15,12 +15,12 @@ import botigaprop.servidor.Services.ControlAcces;
 import botigaprop.servidor.Services.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author Elisabet Isart
@@ -67,31 +67,39 @@ public class ComandaController {
     }
 
     @GetMapping("/comandes/{codiAcces}")
-    public List<ComandaVisualitzacio> llistarComandes(@PathVariable String codiAcces) {
+    public Map<String, Object> llistarComandes(@PathVariable String codiAcces, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size) {
 
         log.trace("Petició de llistar comandes del codi " + codiAcces);
 
+        Pageable paging = PageRequest.of(page, size);
         String idUsuari = controlAcces.ValidarCodiAcces(codiAcces);
         Usuari usuari = usuariRepository.findByIdUsuari(idUsuari);
-        List<Comanda> comandes = new ArrayList<>();
 
+        Page<Comanda> pageComanda = null;
         if (usuari.getRol() == Rol.PROVEIDOR)
         {
-            comandes = comandaRepository.findComandaByProveidor(usuari);
+            pageComanda = comandaRepository.findComandaByProveidor(usuari, paging);
         }
         if (usuari.getRol() == Rol.CLIENT)
         {
-            comandes = comandaRepository.findComandaByClient(usuari);
+            pageComanda = comandaRepository.findComandaByClient(usuari, paging);
         }
         if (usuari.getRol() == Rol.ADMINISTRADOR)
         {
-            comandes = comandaRepository.findAll();
+            pageComanda = comandaRepository.findAll(paging);
         }
 
+        List<Comanda> comandes = pageComanda.getContent();
         List<ComandaVisualitzacio> comandesAMostrar = mapper.ComandesAMostrar(comandes);
 
+        Map<String, Object> response = new HashMap<>();
+        response.put("comandes", comandesAMostrar);
+        response.put("paginaActual", pageComanda.getNumber());
+        response.put("totalComandes", pageComanda.getTotalElements());
+        response.put("totalPagines", pageComanda.getTotalPages());
+
         log.trace("Retornada llista de comandes");
-        return comandesAMostrar;
+        return response;
     }
 
     @DeleteMapping("/cancellarcomanda/{codiAcces}/{idComanda}")

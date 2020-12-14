@@ -14,6 +14,9 @@ import botigaprop.servidor.Services.ControlAcces;
 import botigaprop.servidor.Services.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -107,7 +110,8 @@ public class ValoracioController {
     }
 
     private void ValidarProducteEnComandaDelUsuari(PeticioAltaValoracio valoracio, Usuari usuari) {
-        List<Comanda> comandes = comandaRepository.findComandaByClient(usuari);
+        Page<Comanda> pageComandes = comandaRepository.findComandaByClient(usuari, PageRequest.of(0, 5));
+        List<Comanda> comandes = pageComandes.getContent();
         if (!comandes.stream().anyMatch(c -> c.getLinies().stream().anyMatch(l -> l.getProducte().getIdProducte().equals(valoracio.getIdProducte()))))
         {
             throw new BadRequestException("L'usuari no ha fet cap comanda del producte que vol valorar");
