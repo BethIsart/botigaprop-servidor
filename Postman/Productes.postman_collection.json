@@ -20,7 +20,8 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:8080/altaproducte",
+					"raw": "https://localhost:8080/altaproducte",
+					"protocol": "https",
 					"host": [
 						"localhost"
 					],
@@ -38,14 +39,21 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:8080/productes/codiAcces",
+					"raw": "https://localhost:8080/productes/72a67853-7819-43f3-a9b2-f2ce30047cf6?page=1",
+					"protocol": "https",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
 						"productes",
-						"codiAcces"
+						"72a67853-7819-43f3-a9b2-f2ce30047cf6"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						}
 					]
 				}
 			},
@@ -66,7 +74,8 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:8080/baixaproducte/codiAcces/idProducte",
+					"raw": "https://localhost:8080/baixaproducte/codiAcces/idProducte",
+					"protocol": "https",
 					"host": [
 						"localhost"
 					],
@@ -95,7 +104,8 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:8080/editarproducte/codiAcces",
+					"raw": "https://localhost:8080/editarproducte/codiAcces",
+					"protocol": "https",
 					"host": [
 						"localhost"
 					],
@@ -123,7 +133,8 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:8080/filtrarproductes",
+					"raw": "https://localhost:8080/filtrarproductes",
+					"protocol": "https",
 					"host": [
 						"localhost"
 					],

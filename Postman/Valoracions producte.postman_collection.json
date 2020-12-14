@@ -20,7 +20,8 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:8080/altavaloracioproducte",
+					"raw": "https://localhost:8080/altavaloracioproducte",
+					"protocol": "https",
 					"host": [
 						"localhost"
 					],
@@ -38,7 +39,8 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:8080/valoracionsproducte/codiAcces/idProducte",
+					"raw": "https://localhost:8080/valoracionsproducte/codiAcces/idProducte",
+					"protocol": "https",
 					"host": [
 						"localhost"
 					],

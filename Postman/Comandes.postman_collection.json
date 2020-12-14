@@ -20,7 +20,8 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:8080/altacomanda",
+					"raw": "https://localhost:8080/altacomanda",
+					"protocol": "https",
 					"host": [
 						"localhost"
 					],
@@ -38,7 +39,8 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:8080/comandes/codiAcces",
+					"raw": "https://localhost:8080/comandes/codiAcces",
+					"protocol": "https",
 					"host": [
 						"localhost"
 					],
@@ -66,7 +68,8 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:8080/cancellarcomanda/codiAcces/idComanda",
+					"raw": "https://localhost:8080/cancellarcomanda/codiAcces/idComanda",
+					"protocol": "https",
 					"host": [
 						"localhost"
 					],
