@@ -122,7 +122,7 @@ public class ComandaController {
         Comanda comanda = ValidarComandaExistentIDelUsuari(idComanda, idUsuari);
         CancellarComanda(comanda);
 
-        return "Comanda donada de baixa";
+        return "Comanda cancel·lada";
     }
 
     private void CancellarComanda(Comanda comanda) {
