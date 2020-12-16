@@ -1,9 +1,12 @@
-package botigaprop.servidor.Models;
+package botigaprop.servidor.Models.Domain;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.util.Date;
 
+/**
+ * @author Elisabet Isart
+ */
 @Entity
 @Table(name = "Usuaris")
 public class Usuari {

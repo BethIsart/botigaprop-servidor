@@ -1,24 +1,40 @@
 package botigaprop.servidor.Controllers;
 
 import botigaprop.servidor.Exceptions.BadRequestException;
+import botigaprop.servidor.Exceptions.UsuariNotAllowedException;
 import botigaprop.servidor.Exceptions.UsuariNotFoundException;
-import botigaprop.servidor.Models.*;
+import botigaprop.servidor.Exceptions.UsuarisNotFoundException;
+import botigaprop.servidor.Models.Domain.DadesAcces;
+import botigaprop.servidor.Models.Domain.Rol;
+import botigaprop.servidor.Models.Domain.Usuari;
+import botigaprop.servidor.Models.Requests.PeticioCanviContrasenya;
+import botigaprop.servidor.Models.Requests.PeticioDeshabilitarUsuari;
+import botigaprop.servidor.Models.Requests.PeticioEdicioUsuari;
 import botigaprop.servidor.Persistence.UsuariRepository;
+import botigaprop.servidor.Services.ControlAcces;
 import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
+/**
+ * @author Elisabet Isart
+ */
 @RestController
 public class UsuariController {
     private static final Logger log = LoggerFactory.getLogger(UsuariController.class.getName());
     private final UsuariRepository repository;
-    private final Map<String, String> codisAccesAcreditats = new HashMap<>();
+    private final ControlAcces controlAcces;
 
-    public UsuariController(UsuariRepository repository) {
+    public UsuariController(UsuariRepository repository, ControlAcces controlAcces) {
         this.repository = repository;
+        this.controlAcces = controlAcces;
     }
 
     @PostMapping("/registre")
@@ -36,16 +52,16 @@ public class UsuariController {
         return "Usuari registrat correctament amb el id " + nouUsuari.getIdUsuari();
     }
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     public String iniciarSessio(@RequestBody DadesAcces dadesAccesUsuari) {
 
         log.trace("Petició d'inici de sessió del usuari amb email " + dadesAccesUsuari.getEmail());
 
         ValidarCampsObligatorisPeticioLogin(dadesAccesUsuari);
         Usuari usuari = ValidarUsuariICredencials(dadesAccesUsuari);
-        ValidarUsuariSenseAccesPrevi(usuari);
+        controlAcces.ValidarUsuariSenseAccesPrevi(usuari);
         ActualitzarDataUltimAcces(usuari);
-        String codiAcces = GenerarCodiAcces(usuari);
+        String codiAcces = controlAcces.GenerarCodiAcces(usuari);
 
         log.info("Retornat codi d'accés per l'usuari amb identificador "+ usuari.getIdUsuari() +" : " + codiAcces);
 
@@ -57,8 +73,8 @@ public class UsuariController {
 
         log.trace("Petició de finalitzar sessió del codi " + codiAcces);
 
-        ValidarCodiAcces(codiAcces);
-        codisAccesAcreditats.remove(codiAcces);
+        controlAcces.ValidarCodiAcces(codiAcces);
+        controlAcces.EliminarCodiAcces(codiAcces);
 
         log.info("Sessió finalitzada correctament pel codi " + codiAcces);
         return "Sessió finalitzada";
@@ -69,7 +85,7 @@ public class UsuariController {
     {
         log.trace("Petició de canvi de contrasenya del codi " + codiAcces);
 
-        String idUsuari = ValidarCodiAcces(codiAcces);
+        String idUsuari = controlAcces.ValidarCodiAcces(codiAcces);
         ValidarCampsObligatorisPeticioCanviarContrasenya(peticio);
         ActualitzarContrasenya(peticio, idUsuari);
 
@@ -81,7 +97,7 @@ public class UsuariController {
     {
         log.trace("Petició de deshabilitar usuari amb identificador del codi "+ codiAcces);
 
-        String idUsuari = ValidarCodiAcces(codiAcces);
+        String idUsuari = controlAcces.ValidarCodiAcces(codiAcces);
         ValidarCampsObligatorisPeticioDeshabilitarUsuari(peticio);
         ValidarUsuariAmbPermisosAdministrador(idUsuari);
         DeshabilitarUsuari(peticio);
@@ -90,24 +106,57 @@ public class UsuariController {
     }
 
     @GetMapping("/usuaris/{codiAcces}")
-    public List<Usuari> llistarUsuaris(@PathVariable String codiAcces) {
+    public Map<String, Object> llistarUsuaris(@PathVariable String codiAcces, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size) {
 
         log.trace("Petició de llistar usuaris del codi " + codiAcces);
 
-        String idUsuari = ValidarCodiAcces(codiAcces);
+        Pageable paging = PageRequest.of(page, size);
+        String idUsuari = controlAcces.ValidarCodiAcces(codiAcces);
         ValidarUsuariAmbPermisosAdministrador(idUsuari);
 
-        List<Usuari> usuaris = repository.findAll();
+        Page<Usuari> pageUsuaris = repository.findAll(paging);
+        List<Usuari> usuaris;
+        if (pageUsuaris != null)
+        {
+            usuaris = pageUsuaris.getContent();
+        }
+        else
+        {
+            throw new UsuarisNotFoundException();
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("usuaris", usuaris);
+        response.put("paginaActual", pageUsuaris.getNumber());
+        response.put("totalUsuaris", pageUsuaris.getTotalElements());
+        response.put("totalPagines", pageUsuaris.getTotalPages());
 
         log.trace("Retornada llista d'usuaris");
-        return usuaris;
+        return response;
     }
 
-    private String ValidarCodiAcces(String codiAcces) {
-        if (!codisAccesAcreditats.containsKey(codiAcces)){
-            throw new BadRequestException("Codi d'accés no vàlid");
-        }
-        return codisAccesAcreditats.get(codiAcces);
+    @PutMapping("/editarusuari/{codiAcces}")
+    public Usuari editarUsuari(@RequestBody PeticioEdicioUsuari usuariEditat, @PathVariable String codiAcces)
+    {
+        log.trace("Petició d'edició d'usuari del codi " + codiAcces);
+
+        String idUsuari = controlAcces.ValidarCodiAcces(codiAcces);
+        ValidarUsuariProveidor(idUsuari);
+        Usuari usuariActualitzat = ActualitzarUsuari(idUsuari, usuariEditat);
+
+        return usuariActualitzat;
+    }
+
+    @GetMapping("/usuari/{codiAcces}")
+    public Usuari Usuari(@PathVariable String codiAcces) {
+
+        log.trace("Petició de mostrar les dades d'usuari del codi " + codiAcces);
+
+        String idUsuari = controlAcces.ValidarCodiAcces(codiAcces);
+        Usuari usuari = repository.findByIdUsuari(idUsuari);
+
+        log.trace("Retornades dades d'usuari del usuari " + usuari.getIdUsuari());
+        return usuari;
     }
 
     private void InicialitzarCampsNouUsuari(Usuari nouUsuari) {
@@ -213,12 +262,6 @@ public class UsuariController {
         repository.save(usuari);
     }
 
-    private String GenerarCodiAcces(Usuari usuari) {
-        String codiAcces = UUID.randomUUID().toString();
-        codisAccesAcreditats.put(codiAcces, usuari.getIdUsuari());
-        return codiAcces;
-    }
-
     private void ValidarCampsObligatorisPeticioCanviarContrasenya(PeticioCanviContrasenya peticio) {
         if (peticio.getContrasenya() == null || peticio.getContrasenya().isEmpty())
         {
@@ -233,13 +276,6 @@ public class UsuariController {
         log.info("Contrasenya modificada correctament per l'usuari amb identificador " + usuari.getIdUsuari());
     }
 
-    private void ValidarUsuariSenseAccesPrevi(Usuari usuari) {
-        if (codisAccesAcreditats.containsValue(usuari.getIdUsuari()))
-        {
-            throw new BadRequestException("Aquest usuari ja te accés. Per obtenir un nou codi primer ha de finalitzar sessió");
-        }
-    }
-
     private void ValidarCampsObligatorisPeticioDeshabilitarUsuari(PeticioDeshabilitarUsuari peticio) {
         if (peticio.getIdUsuari() == null || peticio.getIdUsuari().isEmpty())
         {
@@ -251,7 +287,7 @@ public class UsuariController {
         Usuari usuari = repository.findByIdUsuari(idUsuari);
         if (usuari.getRol() != Rol.ADMINISTRADOR)
         {
-            throw new BadRequestException("Aquest usuari no té permís d'administrador");
+            throw new UsuariNotAllowedException("Aquest usuari no té permís d'administrador");
         }
     }
 
@@ -266,5 +302,46 @@ public class UsuariController {
         usuari.setDeshabilitat(true);
         repository.save(usuari);
         log.info("Deshabilitat l'usuari amb identificador "+usuari.getIdUsuari());
+    }
+
+    private void ValidarUsuariProveidor(String idUsuari) {
+        Usuari usuari = repository.findByIdUsuari(idUsuari);
+        if (usuari.getRol() != Rol.PROVEIDOR)
+        {
+            throw new UsuariNotAllowedException("Aquesta funcionalitat requereix el rol de proveïdor");
+        }
+    }
+
+    private Usuari ActualitzarUsuari(String idUsuari, PeticioEdicioUsuari usuariEditat) {
+
+        Usuari usuari = repository.findByIdUsuari(idUsuari);
+
+        if (usuariEditat.getNom() != null && !usuariEditat.getNom().isEmpty())
+        {
+            usuari.setNom(usuariEditat.getNom());
+        }
+
+        if (usuariEditat.getCifEmpresa() != null && !usuariEditat.getCifEmpresa().isEmpty())
+        {
+            usuari.setCifEmpresa(usuariEditat.getCifEmpresa());
+        }
+
+        if (usuariEditat.getDireccio() != null && !usuariEditat.getDireccio().isEmpty())
+        {
+            usuari.setDireccio(usuariEditat.getDireccio());
+        }
+
+        if (usuariEditat.getPoblacio() != null && !usuariEditat.getPoblacio().isEmpty())
+        {
+            usuari.setPoblacio(usuariEditat.getPoblacio());
+        }
+
+        if (usuariEditat.getProvincia() != null && !usuariEditat.getProvincia().isEmpty())
+        {
+            usuari.setProvincia(usuariEditat.getProvincia());
+        }
+
+        repository.save(usuari);
+        return usuari;
     }
 }

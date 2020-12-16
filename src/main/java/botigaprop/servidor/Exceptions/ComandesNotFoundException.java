@@ -6,10 +6,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 /**
  * @author Elisabet Isart
  */
-@ResponseStatus(HttpStatus.BAD_REQUEST)
-public class BadRequestException extends RuntimeException {
-
-    public BadRequestException(String missatgeError) {
-        super(missatgeError);
+@ResponseStatus(HttpStatus.NOT_FOUND)
+public class ComandesNotFoundException extends RuntimeException {
+    public ComandesNotFoundException() {
+        super("No s'ha trobat cap comanda");
     }
 }

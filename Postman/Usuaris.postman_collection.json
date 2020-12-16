@@ -1,17 +1,18 @@
 {
 	"info": {
-		"_postman_id": "1f8c109c-529c-464c-b8dd-38dfd2104eca",
+		"_postman_id": "2296c246-04e3-4ec5-8ea1-4eff59a9d959",
 		"name": "Usuaris",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "LlistaUsuaris",
+			"name": "Llista usuaris",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:8080/usuaris/codiAcces",
+					"raw": "https://localhost:8080/usuaris/codiAcces",
+					"protocol": "https",
 					"host": [
 						"localhost"
 					],
@@ -31,7 +32,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"email\":\"anEmail@email.com\",\r\n    \"contrasenya\":\"1234\",\r\n    \"rol\":\"CLIENT\"\r\n}",
+					"raw": "{\r\n    \"email\":\"anEmail@email.com\",\r\n    \"contrasenya\":\"1234\",\r\n    \"rol\":\"PROVEIDOR\",\r\n    \"nom\":\"unNom\",\r\n    \"cifEmpresa\":\"unCif\",\r\n    \"direccio\":\"unaDireccio\",\r\n    \"poblacio\":\"unaPoblacio\",\r\n    \"provincia\":\"unaProvincia\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -39,7 +40,8 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:8080/registre",
+					"raw": "https://localhost:8080/registre",
+					"protocol": "https",
 					"host": [
 						"localhost"
 					],
@@ -53,15 +55,12 @@
 		},
 		{
 			"name": "Login",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
 			"request": {
-				"method": "GET",
+				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"email\":\"anEmail@email.com\",\r\n    \"contrasenya\":\"1234\"\r\n}",
+					"raw": "{\r\n    \"email\":\"admin@email.com\",\r\n    \"contrasenya\":\"1234\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -69,7 +68,8 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:8080/login",
+					"raw": "https://localhost:8080/login",
+					"protocol": "https",
 					"host": [
 						"localhost"
 					],
@@ -94,7 +94,8 @@
 					"raw": "{\r\n    contrasenya:\"123456\"\r\n}"
 				},
 				"url": {
-					"raw": "localhost:8080/logout/codiAcces",
+					"raw": "https://localhost:8080/logout/codiAcces",
+					"protocol": "https",
 					"host": [
 						"localhost"
 					],
@@ -122,7 +123,8 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:8080/canviarContrasenya/codiAcces",
+					"raw": "https://localhost:8080/canviarContrasenya/codiAcces",
+					"protocol": "https",
 					"host": [
 						"localhost"
 					],
@@ -150,14 +152,63 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:8080//baixa/codiAcces",
+					"raw": "https://localhost:8080/baixa/codiAcces",
+					"protocol": "https",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
-						"",
 						"baixa",
+						"codiAcces"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Editar usuari",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"nom\":\"unNom\",\r\n    \"cifEmpresa\":\"unCif\",\r\n    \"direccio\":\"unaDireccio\",\r\n    \"poblacio\":\"unaPoblacio\",\r\n    \"provincia\":\"unaProvincia\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:8080/editarusuari/codiAcces",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"editarusuari",
+						"codiAcces"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Veure usuari",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:8080/usuari/codiAcces",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"usuari",
 						"codiAcces"
 					]
 				}
