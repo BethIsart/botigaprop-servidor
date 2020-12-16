@@ -90,10 +90,10 @@ public class ComandaController {
             pageComanda = comandaRepository.findAll(paging);
         }
 
-        List<Comanda> comandes = new ArrayList<>();
+        List<Comanda> comandes;
         if (pageComanda != null)
         {
-            pageComanda.getContent();
+            comandes = pageComanda.getContent();
         }
         else
         {
